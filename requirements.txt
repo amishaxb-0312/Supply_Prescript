@@ -25,6 +25,7 @@ fastapi==0.141.1
 fastjsonschema==2.22.2
 fonttools==4.63.0
 fqdn==1.5.1
+greenlet==3.5.5
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
@@ -100,6 +101,7 @@ seaborn==0.13.2
 Send2Trash==2.1.0
 six==1.17.0
 soupsieve==2.9.2
+SQLAlchemy==2.0.52
 stack-data==0.6.3
 starlette==1.6.0
 terminado==0.18.1
