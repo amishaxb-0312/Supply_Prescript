@@ -3,7 +3,6 @@ from pydantic import BaseModel
 import pandas as pd
 import joblib
 
-
 app = FastAPI(
     title="SupplyPrescript AI",
     description="AI-powered supply chain prediction and decision optimization system",
@@ -264,3 +263,170 @@ def optimize_shipment(
 
         "recommendations": recommendations
     }
+
+from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+DATABASE_URL = "sqlite:///./supplyprescript.db"
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base = declarative_base()
+
+class Decision(Base):
+    __tablename__ = "decisions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    supplier = Column(String)
+    product = Column(String)
+
+    delay_probability = Column(Float)
+
+    selected_action = Column(String)
+
+    action_cost = Column(Float)
+
+    expected_delay_days = Column(Integer)
+
+    remaining_delay_risk = Column(Float)
+    actual_delay_days = Column(Integer, nullable=True)
+    actual_cost = Column(Float, nullable=True)
+    outcome_recorded = Column(Integer, default=0)
+Base.metadata.create_all(bind=engine)
+
+class DecisionRequest(BaseModel):
+    supplier: str
+    product: str
+
+    delay_probability: float
+
+    selected_action: str
+
+    action_cost: float
+
+    expected_delay_days: int
+
+    remaining_delay_risk: float
+
+class DecisionRequest(BaseModel):
+    supplier: str
+    product: str
+
+    delay_probability: float
+
+    selected_action: str
+
+    action_cost: float
+
+    expected_delay_days: int
+
+    remaining_delay_risk: float
+
+@app.post("/decision")
+def save_decision(decision: DecisionRequest):
+
+    db = SessionLocal()
+
+    new_decision = Decision(
+        supplier=decision.supplier,
+        product=decision.product,
+        delay_probability=decision.delay_probability,
+        selected_action=decision.selected_action,
+        action_cost=decision.action_cost,
+        expected_delay_days=decision.expected_delay_days,
+        remaining_delay_risk=decision.remaining_delay_risk
+    )
+
+    db.add(new_decision)
+    db.commit()
+    db.refresh(new_decision)
+    db.close()
+
+    return {
+        "message": "Decision saved successfully",
+        "decision_id": new_decision.id
+    }
+
+@app.get("/decisions")
+def get_decisions():
+
+    db = SessionLocal()
+
+    decisions = (
+        db.query(Decision)
+        .order_by(Decision.id.desc())
+        .all()
+    )
+
+    db.close()
+
+    return [
+        {
+            "id": decision.id,
+            "supplier": decision.supplier,
+            "product": decision.product,
+            "delay_probability": decision.delay_probability,
+            "selected_action": decision.selected_action,
+            "action_cost": decision.action_cost,
+            "expected_delay_days": decision.expected_delay_days,
+            "remaining_delay_risk": decision.remaining_delay_risk
+        }
+        for decision in decisions
+    ]
+
+class OutcomeRequest(BaseModel):
+    actual_delay_days: int
+    actual_cost: float
+
+@app.post("/decision/{decision_id}/outcome")
+def record_outcome(
+    decision_id: int,
+    outcome: OutcomeRequest
+):
+
+    db = SessionLocal()
+
+    decision = (
+        db.query(Decision)
+        .filter(Decision.id == decision_id)
+        .first()
+    )
+
+    if decision is None:
+        db.close()
+
+        return {
+            "error": "Decision not found"
+        }
+
+    decision.actual_delay_days = (
+        outcome.actual_delay_days
+    )
+
+    decision.actual_cost = (
+        outcome.actual_cost
+    )
+
+    decision.outcome_recorded = 1
+
+    db.commit()
+    db.refresh(decision)
+    db.close()
+
+    return {
+        "message": "Outcome recorded successfully",
+        "decision_id": decision.id,
+        "actual_delay_days": decision.actual_delay_days,
+        "actual_cost": decision.actual_cost
+    }
+
