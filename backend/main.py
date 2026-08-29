@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import joblib
@@ -405,9 +405,10 @@ def record_outcome(
     if decision is None:
         db.close()
 
-        return {
-            "error": "Decision not found"
-        }
+        raise HTTPException(
+        status_code=404,
+        detail="Decision not found"
+    )
 
     decision.actual_delay_days = (
         outcome.actual_delay_days
@@ -444,16 +445,18 @@ def get_performance(decision_id: int):
     if decision is None:
         db.close()
 
-        return {
-            "error": "Decision not found"
-        }
+        raise HTTPException(
+        status_code=404,
+        detail="Decision not found"
+    )
 
     if decision.outcome_recorded == 0:
         db.close()
 
-        return {
-            "error": "Outcome has not been recorded yet"
-        }
+        raise HTTPException(
+        status_code=400,
+        detail="Outcome has not been recorded yet"
+    )
 
     cost_difference = (
         decision.action_cost
