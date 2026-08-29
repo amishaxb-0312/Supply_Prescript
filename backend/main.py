@@ -430,3 +430,84 @@ def record_outcome(
         "actual_cost": decision.actual_cost
     }
 
+@app.get("/decision/{decision_id}/performance")
+def get_performance(decision_id: int):
+
+    db = SessionLocal()
+
+    decision = (
+        db.query(Decision)
+        .filter(Decision.id == decision_id)
+        .first()
+    )
+
+    if decision is None:
+        db.close()
+
+        return {
+            "error": "Decision not found"
+        }
+
+    if decision.outcome_recorded == 0:
+        db.close()
+
+        return {
+            "error": "Outcome has not been recorded yet"
+        }
+
+    cost_difference = (
+        decision.action_cost
+        - decision.actual_cost
+    )
+
+    delay_difference = (
+        decision.expected_delay_days
+        - decision.actual_delay_days
+    )
+
+    if decision.actual_delay_days <= decision.expected_delay_days:
+        outcome_status = "Better than expected"
+    else:
+        outcome_status = "Worse than expected"
+
+    db.close()
+
+    return {
+        "decision_id": decision.id,
+        "selected_action": decision.selected_action,
+
+        "predicted_delay_risk": round(
+            decision.delay_probability * 100,
+            2
+        ),
+
+        "expected_delay_days": (
+            decision.expected_delay_days
+        ),
+
+        "actual_delay_days": (
+            decision.actual_delay_days
+        ),
+
+        "expected_action_cost": round(
+            decision.action_cost,
+            2
+        ),
+
+        "actual_cost": round(
+            decision.actual_cost,
+            2
+        ),
+
+        "cost_difference": round(
+            cost_difference,
+            2
+        ),
+
+        "delay_difference_days": (
+            delay_difference
+        ),
+
+        "outcome_status": outcome_status
+    }
+
