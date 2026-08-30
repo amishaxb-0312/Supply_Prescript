@@ -2,6 +2,8 @@ import { useState } from "react"
 
 function Prediction() {
   const [formData, setFormData] = useState({
+    supplier: "",
+    product: "",
     distance_km: "",
     order_quantity: "",
     supplier_reliability: "",
@@ -13,6 +15,10 @@ function Prediction() {
     weather_risk: "",
     demand_forecast: "",
   })
+
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,7 +32,48 @@ function Prediction() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    console.log("Shipment data:", formData)
+    setLoading(true)
+    setError("")
+    setResult(null)
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          supplier: formData.supplier,
+          product: formData.product,
+          distance_km: Number(formData.distance_km),
+          order_quantity: Number(formData.order_quantity),
+          supplier_reliability: Number(formData.supplier_reliability),
+          historical_delay_rate: Number(formData.historical_delay_rate),
+          lead_time_days: Number(formData.lead_time_days),
+          inventory_level: Number(formData.inventory_level),
+          supplier_capacity: Number(formData.supplier_capacity),
+          shipping_cost: Number(formData.shipping_cost),
+          weather_risk: Number(formData.weather_risk),
+          demand_forecast: Number(formData.demand_forecast),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Prediction request failed")
+      }
+
+      const data = await response.json()
+
+      console.log("Prediction response:", data)
+
+      setResult(data)
+
+    } catch (err) {
+      console.error(err)
+      setError("Unable to connect to the prediction server.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -64,8 +111,42 @@ function Prediction() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* Form Fields */}
           <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-2">
+
+            {/* Supplier */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Supplier
+              </label>
+
+              <input
+                type="text"
+                name="supplier"
+                value={formData.supplier}
+                onChange={handleChange}
+                placeholder="e.g. Supplier A"
+                required
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+              />
+            </div>
+
+
+            {/* Product */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Product
+              </label>
+
+              <input
+                type="text"
+                name="product"
+                value={formData.product}
+                onChange={handleChange}
+                placeholder="e.g. Electronics"
+                required
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+              />
+            </div>
 
 
             {/* Distance */}
@@ -80,6 +161,7 @@ function Prediction() {
                 value={formData.distance_km}
                 onChange={handleChange}
                 placeholder="e.g. 1200"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -97,6 +179,7 @@ function Prediction() {
                 value={formData.order_quantity}
                 onChange={handleChange}
                 placeholder="e.g. 500"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -115,6 +198,7 @@ function Prediction() {
                 value={formData.supplier_reliability}
                 onChange={handleChange}
                 placeholder="e.g. 0.85"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -133,6 +217,7 @@ function Prediction() {
                 value={formData.historical_delay_rate}
                 onChange={handleChange}
                 placeholder="e.g. 0.20"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -150,6 +235,7 @@ function Prediction() {
                 value={formData.lead_time_days}
                 onChange={handleChange}
                 placeholder="e.g. 15"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -167,6 +253,7 @@ function Prediction() {
                 value={formData.inventory_level}
                 onChange={handleChange}
                 placeholder="e.g. 800"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -184,6 +271,7 @@ function Prediction() {
                 value={formData.supplier_capacity}
                 onChange={handleChange}
                 placeholder="e.g. 5000"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -201,6 +289,7 @@ function Prediction() {
                 value={formData.shipping_cost}
                 onChange={handleChange}
                 placeholder="e.g. 15000"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -219,6 +308,7 @@ function Prediction() {
                 value={formData.weather_risk}
                 onChange={handleChange}
                 placeholder="e.g. 0.40"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -236,6 +326,7 @@ function Prediction() {
                 value={formData.demand_forecast}
                 onChange={handleChange}
                 placeholder="e.g. 1200"
+                required
                 className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
               />
             </div>
@@ -243,14 +334,23 @@ function Prediction() {
           </div>
 
 
-          {/* Submit Button */}
+          {/* Error */}
+          {error && (
+            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+              {error}
+            </div>
+          )}
+
+
+          {/* Button */}
           <div className="mt-8 flex justify-end">
 
             <button
               type="submit"
-              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+              disabled={loading}
+              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Analyze Shipment
+              {loading ? "Analyzing..." : "Analyze Shipment"}
             </button>
 
           </div>
@@ -258,6 +358,61 @@ function Prediction() {
         </form>
 
       </div>
+
+
+      {/* Prediction Result */}
+      {result && (
+  <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+
+    <p className="text-sm font-medium text-gray-400">
+      Prediction Result
+    </p>
+
+    <h2 className="mt-1 text-2xl font-semibold text-gray-900">
+      Shipment Analysis
+    </h2>
+
+    <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+
+      {/* Delay Percentage */}
+      <div className="rounded-xl bg-gray-50 p-5">
+        <p className="text-sm text-gray-500">
+          Delay Percentage
+        </p>
+
+        <p className="mt-2 text-xl font-semibold text-gray-900">
+          {result.delay_percentage}%
+        </p>
+      </div>
+
+
+      {/* Delay Probability */}
+      <div className="rounded-xl bg-gray-50 p-5">
+        <p className="text-sm text-gray-500">
+          Delay Probability
+        </p>
+
+        <p className="mt-2 text-xl font-semibold text-gray-900">
+          {(result.delay_probability * 100).toFixed(2)}%
+        </p>
+      </div>
+
+
+      {/* Risk Level */}
+      <div className="rounded-xl bg-gray-50 p-5">
+        <p className="text-sm text-gray-500">
+          Risk Level
+        </p>
+
+        <p className="mt-2 text-xl font-semibold text-gray-900">
+          {result.risk_level}
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+)}
 
     </div>
   )
