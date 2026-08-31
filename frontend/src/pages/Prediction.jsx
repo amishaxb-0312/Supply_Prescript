@@ -14,9 +14,12 @@ function Prediction() {
     shipping_cost: "",
     weather_risk: "",
     demand_forecast: "",
+    budget: "",
+    max_acceptable_delay: "",
   })
 
   const [result, setResult] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -35,42 +38,73 @@ function Prediction() {
     setLoading(true)
     setError("")
     setResult(null)
+    setRecommendations([])
+
+    const shipmentData = {
+      supplier: formData.supplier,
+      product: formData.product,
+      distance_km: Number(formData.distance_km),
+      order_quantity: Number(formData.order_quantity),
+      supplier_reliability: Number(formData.supplier_reliability),
+      historical_delay_rate: Number(formData.historical_delay_rate),
+      lead_time_days: Number(formData.lead_time_days),
+      inventory_level: Number(formData.inventory_level),
+      supplier_capacity: Number(formData.supplier_capacity),
+      shipping_cost: Number(formData.shipping_cost),
+      weather_risk: Number(formData.weather_risk),
+      demand_forecast: Number(formData.demand_forecast),
+      budget: Number(formData.budget),
+      max_acceptable_delay: Number(formData.max_acceptable_delay),
+
+    }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          supplier: formData.supplier,
-          product: formData.product,
-          distance_km: Number(formData.distance_km),
-          order_quantity: Number(formData.order_quantity),
-          supplier_reliability: Number(formData.supplier_reliability),
-          historical_delay_rate: Number(formData.historical_delay_rate),
-          lead_time_days: Number(formData.lead_time_days),
-          inventory_level: Number(formData.inventory_level),
-          supplier_capacity: Number(formData.supplier_capacity),
-          shipping_cost: Number(formData.shipping_cost),
-          weather_risk: Number(formData.weather_risk),
-          demand_forecast: Number(formData.demand_forecast),
-        }),
-      })
+      // Step 1: Get prediction
+      const predictionResponse = await fetch(
+        "http://127.0.0.1:8000/predict",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(shipmentData),
+        }
+      )
 
-      if (!response.ok) {
+      if (!predictionResponse.ok) {
         throw new Error("Prediction request failed")
       }
 
-      const data = await response.json()
+      const predictionData = await predictionResponse.json()
 
-      console.log("Prediction response:", data)
+      console.log("Prediction response:", predictionData)
 
-      setResult(data)
+      setResult(predictionData)
 
+      // Step 2: Get optimized recommendations
+      const optimizeResponse = await fetch(
+        "http://127.0.0.1:8000/optimize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(shipmentData),
+        }
+      )
+
+      if (!optimizeResponse.ok) {
+        throw new Error("Optimization request failed")
+      }
+
+      const optimizeData = await optimizeResponse.json()
+
+      console.log("Optimization response:", optimizeData)
+
+      setRecommendations(optimizeData.recommendations || [])
     } catch (err) {
       console.error(err)
-      setError("Unable to connect to the prediction server.")
+      setError(err.message || "Unable to connect to the prediction server.")
     } finally {
       setLoading(false)
     }
@@ -331,9 +365,42 @@ function Prediction() {
               />
             </div>
 
+
+            {/* Budget */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Budget
+              </label>
+
+              <input
+                type="number"
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                placeholder="e.g. 20000"
+                required
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+              />
+            </div>
+
           </div>
 
+            {/* Maximum Acceptable Delay */}
+<div>
+  <label className="text-sm font-medium text-gray-700">
+    Maximum Acceptable Delay (days)
+  </label>
 
+  <input
+    type="number"
+    name="max_acceptable_delay"
+    value={formData.max_acceptable_delay}
+    onChange={handleChange}
+    placeholder="e.g. 7"
+    required
+    className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+  />
+</div>
           {/* Error */}
           {error && (
             <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
@@ -362,57 +429,146 @@ function Prediction() {
 
       {/* Prediction Result */}
       {result && (
-  <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
 
-    <p className="text-sm font-medium text-gray-400">
-      Prediction Result
-    </p>
+          <p className="text-sm font-medium text-gray-400">
+            Prediction Result
+          </p>
 
-    <h2 className="mt-1 text-2xl font-semibold text-gray-900">
-      Shipment Analysis
-    </h2>
+          <h2 className="mt-1 text-2xl font-semibold text-gray-900">
+            Shipment Analysis
+          </h2>
 
-    <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
 
-      {/* Delay Percentage */}
-      <div className="rounded-xl bg-gray-50 p-5">
-        <p className="text-sm text-gray-500">
-          Delay Percentage
-        </p>
+            {/* Delay Percentage */}
+            <div className="rounded-xl bg-gray-50 p-5">
+              <p className="text-sm text-gray-500">
+                Delay Percentage
+              </p>
 
-        <p className="mt-2 text-xl font-semibold text-gray-900">
-          {result.delay_percentage}%
-        </p>
-      </div>
-
-
-      {/* Delay Probability */}
-      <div className="rounded-xl bg-gray-50 p-5">
-        <p className="text-sm text-gray-500">
-          Delay Probability
-        </p>
-
-        <p className="mt-2 text-xl font-semibold text-gray-900">
-          {(result.delay_probability * 100).toFixed(2)}%
-        </p>
-      </div>
+              <p className="mt-2 text-xl font-semibold text-gray-900">
+                {result.delay_percentage}%
+              </p>
+            </div>
 
 
-      {/* Risk Level */}
-      <div className="rounded-xl bg-gray-50 p-5">
-        <p className="text-sm text-gray-500">
-          Risk Level
-        </p>
+            {/* Delay Probability */}
+            <div className="rounded-xl bg-gray-50 p-5">
+              <p className="text-sm text-gray-500">
+                Delay Probability
+              </p>
 
-        <p className="mt-2 text-xl font-semibold text-gray-900">
-          {result.risk_level}
-        </p>
-      </div>
+              <p className="mt-2 text-xl font-semibold text-gray-900">
+                {(result.delay_probability * 100).toFixed(2)}%
+              </p>
+            </div>
 
-    </div>
 
-  </div>
-)}
+            {/* Risk Level */}
+            <div className="rounded-xl bg-gray-50 p-5">
+              <p className="text-sm text-gray-500">
+                Risk Level
+              </p>
+
+              <p className="mt-2 text-xl font-semibold text-gray-900">
+                {result.risk_level}
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+
+      {/* Optimization Recommendations */}
+      {recommendations.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+
+          <p className="text-sm font-medium text-gray-400">
+            Optimization
+          </p>
+
+          <h2 className="mt-1 text-2xl font-semibold text-gray-900">
+            Recommended Actions
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Recommended supply-chain actions based on cost, capacity and delay risk.
+          </p>
+
+
+          <div className="mt-6 space-y-4">
+
+            {recommendations.map((recommendation, index) => (
+              <div
+                key={index}
+                className="rounded-xl border border-gray-200 p-5"
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+                    <p className="text-base font-semibold text-gray-900">
+                      {recommendation.action}
+                    </p>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      Expected delay: {recommendation.expected_delay_days} days
+                    </p>
+                  </div>
+
+                  <span className="text-sm font-semibold text-gray-900">
+                    ₹{recommendation.cost}
+                  </span>
+
+                </div>
+
+
+                <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+
+                  <div>
+                    <p className="text-xs text-gray-400">
+                      Remaining Risk
+                    </p>
+
+                    <p className="mt-1 text-sm font-medium text-gray-700">
+                      {(recommendation.remaining_delay_risk * 100).toFixed(2)}%
+                    </p>
+                  </div>
+
+
+                  <div>
+                    <p className="text-xs text-gray-400">
+                      Score
+                    </p>
+
+                    <p className="mt-1 text-sm font-medium text-gray-700">
+                      {recommendation.score}
+                    </p>
+                  </div>
+
+
+                  <div>
+                    <p className="text-xs text-gray-400">
+                      Rank
+                    </p>
+
+                    <p className="mt-1 text-sm font-medium text-gray-700">
+                      #{index + 1}
+                    </p>
+                  </div>
+
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+
+        </div>
+      )}
 
     </div>
   )
