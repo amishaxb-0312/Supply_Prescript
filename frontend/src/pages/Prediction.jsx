@@ -20,9 +20,11 @@ function Prediction() {
 
   const [result, setResult] = useState(null)
   const [recommendations, setRecommendations] = useState([])
+  const [selectedAction, setSelectedAction] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [saveMessage, setSaveMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-
   const handleChange = (e) => {
     const { name, value } = e.target
 
@@ -39,6 +41,8 @@ function Prediction() {
     setError("")
     setResult(null)
     setRecommendations([])
+    setSelectedAction(null)
+    setSaveMessage("")
 
     const shipmentData = {
       supplier: formData.supplier,
@@ -109,6 +113,50 @@ function Prediction() {
       setLoading(false)
     }
   }
+  const handleSaveDecision = async () => {
+  if (!selectedAction || !result) {
+    return
+  }
+
+  setSaving(true)
+  setSaveMessage("")
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/decision",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          supplier: formData.supplier,
+          product: formData.product,
+          delay_probability: result.delay_probability,
+          selected_action: selectedAction.action,
+          action_cost: selectedAction.cost,
+          expected_delay_days: selectedAction.expected_delay_days,
+          remaining_delay_risk: selectedAction.remaining_delay_risk,
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error("Failed to save decision")
+    }
+
+    const data = await response.json()
+
+    console.log("Decision saved:", data)
+
+    setSaveMessage("Decision saved successfully.")
+  } catch (err) {
+    console.error(err)
+    setSaveMessage("Unable to save decision.")
+  } finally {
+    setSaving(false)
+  }
+}
 
   return (
     <div className="max-w-6xl">
@@ -534,7 +582,7 @@ function Prediction() {
                     </p>
 
                     <p className="mt-1 text-sm font-medium text-gray-700">
-                      {(recommendation.remaining_delay_risk * 100).toFixed(2)}%
+                      {(recommendation.remaining_delay_risk ).toFixed(2)}%
                     </p>
                   </div>
 
