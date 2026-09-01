@@ -460,7 +460,7 @@ function Prediction() {
               </p>
 
               <p className="mt-2 text-xl font-semibold text-gray-900">
-                {(result.delay_probability * 100).toFixed(2)}%
+                {(result.delay_probability ).toFixed(2)}%
               </p>
             </div>
 
