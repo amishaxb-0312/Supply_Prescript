@@ -7,7 +7,7 @@ import RiskDistribution from "./components/RiskDistribution"
 import ShipmentTable from "./components/ShipmentTable"
 
 import Prediction from "./pages/Prediction"
-
+import DecisionHistory from "./pages/DecisionHistory"
 
 function Dashboard() {
   return (
@@ -110,6 +110,10 @@ function App() {
             <Route
               path="/predictions"
               element={<Prediction />}
+            />
+            <Route
+              path="/decision-history"
+              element={<DecisionHistory />}
             />
 
           </Routes>
