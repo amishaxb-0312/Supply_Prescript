@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+} from "react-router-dom"
 
 import Sidebar from "./components/Sidebar"
 import StatCard from "./components/StatCard"
@@ -12,42 +17,28 @@ import DecisionHistory from "./pages/DecisionHistory"
 
 
 function Dashboard() {
-
   const [decisions, setDecisions] = useState([])
-
   const [loading, setLoading] = useState(true)
 
-
   useEffect(() => {
-
     fetch("http://127.0.0.1:8000/decisions")
       .then((response) => {
-
         if (!response.ok) {
           throw new Error("Failed to fetch decisions")
         }
 
         return response.json()
-
       })
       .then((data) => {
-
         console.log("Dashboard decisions:", data)
-
         setDecisions(data)
-
       })
       .catch((error) => {
-
         console.error("Dashboard error:", error)
-
       })
       .finally(() => {
-
         setLoading(false)
-
       })
-
   }, [])
 
 
@@ -108,9 +99,14 @@ function Dashboard() {
         </div>
 
 
-        <button className="rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800">
+        {/* New Shipment */}
+
+        <Link
+          to="/predictions"
+          className="rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+        >
           + New Shipment
-        </button>
+        </Link>
 
       </div>
 
@@ -192,19 +188,23 @@ function Dashboard() {
 
 
 function App() {
-
   return (
-
     <BrowserRouter>
 
       <div className="flex min-h-screen bg-[#f7f8fa]">
 
+        {/* Sidebar */}
+
         <Sidebar />
 
+
+        {/* Main Content */}
 
         <main className="min-w-0 flex-1 px-8 py-7">
 
           <Routes>
+
+            {/* Dashboard */}
 
             <Route
               path="/"
@@ -212,11 +212,15 @@ function App() {
             />
 
 
+            {/* Prediction */}
+
             <Route
               path="/predictions"
               element={<Prediction />}
             />
 
+
+            {/* Decision History */}
 
             <Route
               path="/decision-history"
@@ -230,9 +234,7 @@ function App() {
       </div>
 
     </BrowserRouter>
-
   )
 }
-
 
 export default App

@@ -105,7 +105,150 @@ def predict_delay(shipment: ShipmentData):
         "risk_level": risk_level
     }
 
+class RecommendationRequest(BaseModel):
+    order_quantity: float
+    shipping_cost: float
+    delay_probability: float
+    budget: float = 20000
+    max_acceptable_delay: float = 7
+@app.post("/recommend")
+def recommend_action(request: RecommendationRequest):
 
+    shipment = {
+        "order_quantity": request.order_quantity,
+        "shipping_cost": request.shipping_cost,
+        "delay_probability": request.delay_probability
+    }
+
+    actions = pd.DataFrame({
+        "action": [
+            "Air Freight",
+            "Secondary Supplier",
+            "Delay Product Launch"
+        ],
+
+        "cost": [
+            shipment["shipping_cost"] * 1.25,
+            shipment["shipping_cost"] * 1.40,
+            shipment["shipping_cost"] * 0.35
+        ],
+
+        "delay_days": [
+            3,
+            5,
+            14
+        ],
+
+        "capacity": [
+            2000,
+            3000,
+            shipment["order_quantity"]
+        ],
+
+        "risk_reduction": [
+            0.75,
+            0.55,
+            0.10
+        ]
+    })
+
+
+    # Calculate remaining risk
+
+    actions["remaining_risk"] = (
+        shipment["delay_probability"]
+        * (1 - actions["risk_reduction"])
+    )
+
+
+    # Check constraints
+
+    actions["budget_feasible"] = (
+        actions["cost"] <= request.budget
+    )
+
+    actions["delay_feasible"] = (
+        actions["delay_days"] <= request.max_acceptable_delay
+    )
+
+    actions["capacity_feasible"] = (
+        actions["capacity"] >= shipment["order_quantity"]
+    )
+
+
+    # Filter feasible actions
+
+    feasible_actions = actions[
+        actions["budget_feasible"]
+        & actions["delay_feasible"]
+        & actions["capacity_feasible"]
+    ].copy()
+
+
+    # If no action satisfies all constraints
+
+    if feasible_actions.empty:
+        raise HTTPException(
+            status_code=400,
+            detail="No feasible recommendation found for the given constraints."
+        )
+
+
+    # Calculate optimization score
+
+    cost_weight = 0.4
+    risk_weight = 0.6
+
+    feasible_actions["score"] = (
+        cost_weight
+        * (feasible_actions["cost"] / request.budget)
+        +
+        risk_weight
+        * feasible_actions["remaining_risk"]
+    )
+
+
+    # Sort recommendations
+
+    recommendations = (
+        feasible_actions
+        .sort_values("score")
+        .reset_index(drop=True)
+    )
+
+
+    # Best recommendation
+
+    best_action = recommendations.iloc[0]
+
+
+    return {
+        "recommended_action": best_action["action"],
+        "estimated_cost": round(float(best_action["cost"]), 2),
+        "expected_delay_days": int(best_action["delay_days"]),
+        "remaining_delay_risk": round(
+            float(best_action["remaining_risk"]),
+            4
+        ),
+
+        "recommendations": [
+            {
+                "action": row["action"],
+                "cost": round(float(row["cost"]), 2),
+                "delay_days": int(row["delay_days"]),
+                "remaining_risk": round(
+                    float(row["remaining_risk"]),
+                    4
+                ),
+                "score": round(
+                    float(row["score"]),
+                    4
+                )
+            }
+
+            for _, row in recommendations.iterrows()
+        ]
+    }
 # -----------------------------
 # Optimization Logic
 # -----------------------------
