@@ -43,10 +43,13 @@ function Sidebar() {
           Recommendations
         </button>
 
-        <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900">
-          <span>☷</span>
+        <Link
+          to="/decision-history"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+        >
+        <span>☷</span>
           Decision History
-        </button>
+        </Link>
 
         <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900">
           <span>↗</span>
