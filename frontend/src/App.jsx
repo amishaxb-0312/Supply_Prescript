@@ -14,7 +14,7 @@ import ShipmentTable from "./components/ShipmentTable"
 
 import Prediction from "./pages/Prediction"
 import DecisionHistory from "./pages/DecisionHistory"
-
+import Recommendations from "./pages/Recommendations"
 
 function Dashboard() {
   const [decisions, setDecisions] = useState([])
@@ -227,8 +227,13 @@ function App() {
               element={<DecisionHistory />}
             />
 
-          </Routes>
 
+          {/*Recommendations */}
+          <Route
+              path="/recommendations"
+              element={<Recommendations />}
+            />
+          </Routes>
         </main>
 
       </div>
