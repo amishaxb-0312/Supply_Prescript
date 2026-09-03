@@ -2,6 +2,8 @@ import { useState } from "react"
 
 function Recommendations() {
   const [formData, setFormData] = useState({
+    supplier: "",
+    product: "",
     order_quantity: "",
     shipping_cost: "",
     delay_probability: "",
@@ -11,7 +13,9 @@ function Recommendations() {
 
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
+  const [saveMessage, setSaveMessage] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -22,12 +26,14 @@ function Recommendations() {
     }))
   }
 
+  // Generate recommendation
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     setLoading(true)
     setError("")
     setResult(null)
+    setSaveMessage("")
 
     try {
       const response = await fetch(
@@ -82,6 +88,73 @@ function Recommendations() {
     }
   }
 
+  // Save recommended decision
+  const handleSaveDecision = async () => {
+    if (!result) return
+
+    setSaving(true)
+    setError("")
+    setSaveMessage("")
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/decision",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            supplier: formData.supplier,
+            product: formData.product,
+            delay_probability: Number(
+              formData.delay_probability
+            ),
+            selected_action:
+              result.recommended_action,
+            action_cost:
+              result.estimated_cost,
+            expected_delay_days:
+              result.expected_delay_days,
+            remaining_delay_risk:
+              result.remaining_delay_risk,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        const errorData = await response.json()
+
+        throw new Error(
+          errorData.detail ||
+            "Failed to save decision"
+        )
+      }
+
+      const data = await response.json()
+
+      console.log(
+        "Decision saved:",
+        data
+      )
+
+      setSaveMessage(
+        "Decision saved successfully!"
+      )
+
+    } catch (err) {
+      console.error(err)
+
+      setError(
+        err.message ||
+          "Unable to save decision."
+      )
+
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div className="max-w-6xl">
 
@@ -103,7 +176,7 @@ function Recommendations() {
       </div>
 
 
-      {/* Input Card */}
+      {/* Optimization Form */}
 
       <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
 
@@ -113,8 +186,8 @@ function Recommendations() {
           </h2>
 
           <p className="mt-1 text-sm text-gray-400">
-            Enter the shipment information and
-            decision constraints.
+            Enter shipment information and decision
+            constraints.
           </p>
         </div>
 
@@ -122,6 +195,44 @@ function Recommendations() {
         <form onSubmit={handleSubmit}>
 
           <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-2">
+
+
+            {/* Supplier */}
+
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Supplier
+              </label>
+
+              <input
+                type="text"
+                name="supplier"
+                value={formData.supplier}
+                onChange={handleChange}
+                placeholder="e.g. Supplier A"
+                required
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+              />
+            </div>
+
+
+            {/* Product */}
+
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Product
+              </label>
+
+              <input
+                type="text"
+                name="product"
+                value={formData.product}
+                onChange={handleChange}
+                placeholder="e.g. Microchips"
+                required
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+              />
+            </div>
 
 
             {/* Order Quantity */}
@@ -241,7 +352,16 @@ function Recommendations() {
           )}
 
 
-          {/* Button */}
+          {/* Save Message */}
+
+          {saveMessage && (
+            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900">
+              {saveMessage}
+            </div>
+          )}
+
+
+          {/* Generate Button */}
 
           <div className="mt-8 flex justify-end">
 
@@ -262,7 +382,7 @@ function Recommendations() {
       </div>
 
 
-      {/* Recommended Action */}
+      {/* Recommendation Result */}
 
       {result && (
         <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
@@ -275,6 +395,8 @@ function Recommendations() {
             {result.recommended_action}
           </h2>
 
+
+          {/* Main Recommendation */}
 
           <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
 
@@ -329,6 +451,24 @@ function Recommendations() {
           </div>
 
 
+          {/* Save Decision Button */}
+
+          <div className="mt-6 flex justify-end">
+
+            <button
+              type="button"
+              onClick={handleSaveDecision}
+              disabled={saving}
+              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {saving
+                ? "Saving..."
+                : "Save Decision"}
+            </button>
+
+          </div>
+
+
           {/* Alternatives */}
 
           <div className="mt-8">
@@ -338,7 +478,8 @@ function Recommendations() {
             </h3>
 
             <p className="mt-1 text-sm text-gray-400">
-              Feasible actions ranked by optimization score.
+              Feasible actions ranked by optimization
+              score.
             </p>
 
 
