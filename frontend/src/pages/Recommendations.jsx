@@ -2,20 +2,25 @@ import { useState } from "react"
 
 function Recommendations() {
   const [formData, setFormData] = useState({
-    supplier: "",
-    product: "",
-    order_quantity: "",
-    shipping_cost: "",
-    delay_probability: "",
-    budget: "20000",
-    max_acceptable_delay: "7",
+    supplier: "Supplier A",
+    product: "Microchips",
+    distance_km: 1200,
+    order_quantity: 1200,
+    supplier_reliability: 0.85,
+    historical_delay_rate: 0.20,
+    lead_time_days: 15,
+    inventory_level: 800,
+    supplier_capacity: 5000,
+    shipping_cost: 12000,
+    weather_risk: 0.40,
+    demand_forecast: 1200,
+    budget: 20000,
+    max_acceptable_delay: 7,
   })
 
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
-  const [saveMessage, setSaveMessage] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,29 +31,38 @@ function Recommendations() {
     }))
   }
 
-  // Generate recommendation
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     setLoading(true)
     setError("")
     setResult(null)
-    setSaveMessage("")
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/recommend",
+        "http://127.0.0.1:8000/optimize",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            supplier: formData.supplier,
+            product: formData.product,
+            distance_km: Number(formData.distance_km),
             order_quantity: Number(formData.order_quantity),
-            shipping_cost: Number(formData.shipping_cost),
-            delay_probability: Number(
-              formData.delay_probability
+            supplier_reliability: Number(formData.supplier_reliability),
+            historical_delay_rate: Number(
+              formData.historical_delay_rate
             ),
+            lead_time_days: Number(formData.lead_time_days),
+            inventory_level: Number(formData.inventory_level),
+            supplier_capacity: Number(
+              formData.supplier_capacity
+            ),
+            shipping_cost: Number(formData.shipping_cost),
+            weather_risk: Number(formData.weather_risk),
+            demand_forecast: Number(formData.demand_forecast),
             budget: Number(formData.budget),
             max_acceptable_delay: Number(
               formData.max_acceptable_delay
@@ -58,107 +72,31 @@ function Recommendations() {
       )
 
       if (!response.ok) {
-        const errorData = await response.json()
-
-        throw new Error(
-          errorData.detail ||
-            "Recommendation request failed"
-        )
+        throw new Error("Optimization request failed")
       }
 
       const data = await response.json()
 
-      console.log(
-        "Recommendation response:",
-        data
-      )
+      console.log("Optimization response:", data)
 
       setResult(data)
-
     } catch (err) {
       console.error(err)
-
       setError(
-        err.message ||
-          "Unable to connect to the recommendation server."
+        "Unable to connect to the optimization server."
       )
-
     } finally {
       setLoading(false)
     }
   }
 
-  // Save recommended decision
-  const handleSaveDecision = async () => {
-    if (!result) return
-
-    setSaving(true)
-    setError("")
-    setSaveMessage("")
-
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/decision",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            supplier: formData.supplier,
-            product: formData.product,
-            delay_probability: Number(
-              formData.delay_probability
-            ),
-            selected_action:
-              result.recommended_action,
-            action_cost:
-              result.estimated_cost,
-            expected_delay_days:
-              result.expected_delay_days,
-            remaining_delay_risk:
-              result.remaining_delay_risk,
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        const errorData = await response.json()
-
-        throw new Error(
-          errorData.detail ||
-            "Failed to save decision"
-        )
-      }
-
-      const data = await response.json()
-
-      console.log(
-        "Decision saved:",
-        data
-      )
-
-      setSaveMessage(
-        "Decision saved successfully!"
-      )
-
-    } catch (err) {
-      console.error(err)
-
-      setError(
-        err.message ||
-          "Unable to save decision."
-      )
-
-    } finally {
-      setSaving(false)
-    }
-  }
+  const bestRecommendation =
+    result?.recommendations?.[0]
 
   return (
     <div className="max-w-6xl">
 
-      {/* Page Header */}
+      {/* Header */}
 
       <div>
         <p className="text-sm font-medium text-gray-400">
@@ -170,13 +108,12 @@ function Recommendations() {
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          Find the best action to reduce shipment
-          delay risk within your constraints.
+          Get optimized actions to reduce shipment delay risk.
         </p>
       </div>
 
 
-      {/* Optimization Form */}
+      {/* Input Form */}
 
       <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
 
@@ -186,16 +123,14 @@ function Recommendations() {
           </h2>
 
           <p className="mt-1 text-sm text-gray-400">
-            Enter shipment information and decision
-            constraints.
+            Enter shipment information to generate an optimized recommendation.
           </p>
         </div>
 
 
         <form onSubmit={handleSubmit}>
 
-          <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-2">
-
+          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
 
             {/* Supplier */}
 
@@ -209,9 +144,8 @@ function Recommendations() {
                 name="supplier"
                 value={formData.supplier}
                 onChange={handleChange}
-                placeholder="e.g. Supplier A"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
             </div>
 
@@ -228,9 +162,8 @@ function Recommendations() {
                 name="product"
                 value={formData.product}
                 onChange={handleChange}
-                placeholder="e.g. Microchips"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
             </div>
 
@@ -247,9 +180,8 @@ function Recommendations() {
                 name="order_quantity"
                 value={formData.order_quantity}
                 onChange={handleChange}
-                placeholder="e.g. 1200"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
             </div>
 
@@ -266,36 +198,9 @@ function Recommendations() {
                 name="shipping_cost"
                 value={formData.shipping_cost}
                 onChange={handleChange}
-                placeholder="e.g. 12000"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
-            </div>
-
-
-            {/* Delay Probability */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Delay Probability
-              </label>
-
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                max="1"
-                name="delay_probability"
-                value={formData.delay_probability}
-                onChange={handleChange}
-                placeholder="e.g. 0.82"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-              <p className="mt-1 text-xs text-gray-400">
-                Enter a value between 0 and 1.
-              </p>
             </div>
 
 
@@ -303,7 +208,7 @@ function Recommendations() {
 
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Maximum Budget
+                Optimization Budget
               </label>
 
               <input
@@ -311,9 +216,8 @@ function Recommendations() {
                 name="budget"
                 value={formData.budget}
                 onChange={handleChange}
-                placeholder="e.g. 20000"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
             </div>
 
@@ -330,20 +234,13 @@ function Recommendations() {
                 name="max_acceptable_delay"
                 value={formData.max_acceptable_delay}
                 onChange={handleChange}
-                placeholder="e.g. 7"
                 required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
               />
-
-              <p className="mt-1 text-xs text-gray-400">
-                Maximum number of delay days allowed.
-              </p>
             </div>
 
           </div>
 
-
-          {/* Error */}
 
           {error && (
             <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
@@ -352,23 +249,12 @@ function Recommendations() {
           )}
 
 
-          {/* Save Message */}
-
-          {saveMessage && (
-            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900">
-              {saveMessage}
-            </div>
-          )}
-
-
-          {/* Generate Button */}
-
-          <div className="mt-8 flex justify-end">
+          <div className="mt-7 flex justify-end">
 
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading
                 ? "Optimizing..."
@@ -384,106 +270,157 @@ function Recommendations() {
 
       {/* Recommendation Result */}
 
-      {result && (
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+      {result && bestRecommendation && (
 
-          <p className="text-sm font-medium text-gray-400">
-            Recommended Action
-          </p>
-
-          <h2 className="mt-1 text-2xl font-semibold text-gray-900">
-            {result.recommended_action}
-          </h2>
-
+        <div className="mt-6">
 
           {/* Main Recommendation */}
 
-          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
 
+            <div className="flex items-start justify-between">
 
-            {/* Cost */}
+              <div>
 
-            <div className="rounded-xl bg-gray-50 p-5">
+                <p className="text-sm font-medium text-gray-400">
+                  Recommended Action
+                </p>
 
-              <p className="text-sm text-gray-500">
-                Estimated Cost
-              </p>
+                <h2 className="mt-2 text-2xl font-semibold text-gray-900">
+                  {bestRecommendation.action}
+                </h2>
 
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                ₹{result.estimated_cost}
-              </p>
+                <p className="mt-2 text-sm text-gray-500">
+                  Best option based on cost, delay and remaining risk.
+                </p>
+                <button
+  onClick={async () => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/decision",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            supplier: formData.supplier,
+            product: formData.product,
+            delay_probability: result.delay_probability,
+            selected_action: bestRecommendation.action,
+            action_cost: bestRecommendation.cost,
+            expected_delay_days:
+              bestRecommendation.expected_delay_days,
+            remaining_delay_risk:
+              bestRecommendation.remaining_delay_risk / 100,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Failed to save decision")
+      }
+
+      const data = await response.json()
+
+      alert(`Decision saved successfully! ID: ${data.decision_id}`)
+    } catch (error) {
+      console.error(error)
+      alert("Unable to save decision.")
+    }
+  }}
+  className="mt-5 rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+>
+  Save Decision
+</button>
+
+              </div>
+
+              <span className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white">
+                Optimized
+              </span>
 
             </div>
 
 
-            {/* Delay */}
+            {/* Metrics */}
 
-            <div className="rounded-xl bg-gray-50 p-5">
+            <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-4">
 
-              <p className="text-sm text-gray-500">
-                Expected Delay
-              </p>
+              <div className="rounded-xl bg-gray-50 p-5">
 
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {result.expected_delay_days} days
-              </p>
+                <p className="text-sm text-gray-500">
+                  Estimated Cost
+                </p>
 
-            </div>
+                <p className="mt-2 text-xl font-semibold text-gray-900">
+                  ₹{bestRecommendation.cost.toLocaleString()}
+                </p>
+
+              </div>
 
 
-            {/* Risk */}
+              <div className="rounded-xl bg-gray-50 p-5">
 
-            <div className="rounded-xl bg-gray-50 p-5">
+                <p className="text-sm text-gray-500">
+                  Expected Delay
+                </p>
 
-              <p className="text-sm text-gray-500">
-                Remaining Delay Risk
-              </p>
+                <p className="mt-2 text-xl font-semibold text-gray-900">
+                  {bestRecommendation.expected_delay_days} days
+                </p>
 
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {(
-                  result.remaining_delay_risk * 100
-                ).toFixed(2)}
-                %
-              </p>
+              </div>
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="text-sm text-gray-500">
+                  Remaining Risk
+                </p>
+
+                <p className="mt-2 text-xl font-semibold text-gray-900">
+                  {bestRecommendation.remaining_delay_risk}%
+                </p>
+
+              </div>
+
+
+              <div className="rounded-xl bg-gray-50 p-5">
+
+                <p className="text-sm text-gray-500">
+                  Original Risk
+                </p>
+
+                <p className="mt-2 text-xl font-semibold text-gray-900">
+                  {result.delay_percentage}%
+                </p>
+
+              </div>
 
             </div>
 
           </div>
 
 
-          {/* Save Decision Button */}
+          {/* Available Recommendations */}
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
 
-            <button
-              type="button"
-              onClick={handleSaveDecision}
-              disabled={saving}
-              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {saving
-                ? "Saving..."
-                : "Save Decision"}
-            </button>
+            <div>
 
-          </div>
+              <p className="text-sm font-medium text-gray-400">
+                Optimization Results
+              </p>
 
+              <h2 className="mt-1 text-xl font-semibold text-gray-900">
+                Available Actions
+              </h2>
 
-          {/* Alternatives */}
-
-          <div className="mt-8">
-
-            <h3 className="text-base font-semibold text-gray-900">
-              Available Recommendations
-            </h3>
-
-            <p className="mt-1 text-sm text-gray-400">
-              Feasible actions ranked by optimization
-              score.
-            </p>
+            </div>
 
 
-            <div className="mt-4 overflow-x-auto">
+            <div className="mt-6 overflow-x-auto">
 
               <table className="w-full text-left">
 
@@ -491,24 +428,28 @@ function Recommendations() {
 
                   <tr className="border-b border-gray-100 text-xs text-gray-400">
 
-                    <th className="px-4 py-3 font-medium">
+                    <th className="px-4 py-4 font-medium">
                       Action
                     </th>
 
-                    <th className="px-4 py-3 font-medium">
+                    <th className="px-4 py-4 font-medium">
                       Cost
                     </th>
 
-                    <th className="px-4 py-3 font-medium">
-                      Delay
+                    <th className="px-4 py-4 font-medium">
+                      Expected Delay
                     </th>
 
-                    <th className="px-4 py-3 font-medium">
+                    <th className="px-4 py-4 font-medium">
                       Remaining Risk
                     </th>
 
-                    <th className="px-4 py-3 font-medium">
+                    <th className="px-4 py-4 font-medium">
                       Score
+                    </th>
+
+                    <th className="px-4 py-4 font-medium">
+                      Status
                     </th>
 
                   </tr>
@@ -523,45 +464,45 @@ function Recommendations() {
 
                       <tr
                         key={recommendation.action}
-                        className="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                        className="border-b border-gray-50 last:border-0"
                       >
+
+                        <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                          {recommendation.action}
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          ₹{recommendation.cost.toLocaleString()}
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          {recommendation.expected_delay_days} days
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          {recommendation.remaining_delay_risk}%
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          {recommendation.score}
+                        </td>
 
                         <td className="px-4 py-4">
 
-                          <span
-                            className={
-                              index === 0
-                                ? "rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white"
-                                : "text-sm text-gray-700"
-                            }
-                          >
-                            {recommendation.action}
-                          </span>
+                          {index === 0 ? (
 
-                        </td>
+                            <span className="rounded-full bg-gray-900 px-2.5 py-1 text-xs font-medium text-white">
+                              Recommended
+                            </span>
 
+                          ) : (
 
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          ₹{recommendation.cost}
-                        </td>
+                            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                              Available
+                            </span>
 
+                          )}
 
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          {recommendation.delay_days} days
-                        </td>
-
-
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          {(
-                            recommendation.remaining_risk
-                            * 100
-                          ).toFixed(2)}
-                          %
-                        </td>
-
-
-                        <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                          {recommendation.score}
                         </td>
 
                       </tr>
@@ -578,6 +519,7 @@ function Recommendations() {
           </div>
 
         </div>
+
       )}
 
     </div>

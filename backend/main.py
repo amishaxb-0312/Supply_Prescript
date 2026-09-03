@@ -471,19 +471,6 @@ class DecisionRequest(BaseModel):
 
     remaining_delay_risk: float
 
-class DecisionRequest(BaseModel):
-    supplier: str
-    product: str
-
-    delay_probability: float
-
-    selected_action: str
-
-    action_cost: float
-
-    expected_delay_days: int
-
-    remaining_delay_risk: float
 
 @app.post("/decision")
 def save_decision(decision: DecisionRequest):
