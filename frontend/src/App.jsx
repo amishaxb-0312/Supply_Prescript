@@ -10,7 +10,7 @@ import ShipmentTable from "./components/ShipmentTable"
 import Prediction from "./pages/Prediction"
 import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
-
+import Shipments from "./pages/Shipments"
 
 function Dashboard() {
 
@@ -187,6 +187,10 @@ function App() {
             <Route
               path="/decision-history"
               element={<DecisionHistory />}
+            />
+            <Route
+              path="/shipments"
+              element={<Shipments />}
             />
 
           </Routes>
