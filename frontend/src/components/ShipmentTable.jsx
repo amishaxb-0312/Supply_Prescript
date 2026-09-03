@@ -1,52 +1,53 @@
-import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
+const shipments = [
+  {
+    id: "SHP-1001",
+    supplier: "Supplier A",
+    product: "Microchips",
+    risk: "High",
+    probability: "74%",
+    action: "Air Freight",
+  },
+  {
+    id: "SHP-1002",
+    supplier: "Supplier B",
+    product: "Steel Components",
+    risk: "Medium",
+    probability: "48%",
+    action: "Standard Freight",
+  },
+  {
+    id: "SHP-1003",
+    supplier: "Supplier C",
+    product: "Industrial Motors",
+    risk: "Low",
+    probability: "21%",
+    action: "Ground Transport",
+  },
+  {
+    id: "SHP-1004",
+    supplier: "Supplier A",
+    product: "Circuit Boards",
+    risk: "High",
+    probability: "81%",
+    action: "Air Freight",
+  },
+  {
+    id: "SHP-1005",
+    supplier: "Supplier D",
+    product: "Plastic Parts",
+    risk: "Low",
+    probability: "16%",
+    action: "Standard Freight",
+  },
+]
+
 function ShipmentTable() {
-  const [decisions, setDecisions] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/decisions")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch decisions")
-        }
-
-        return response.json()
-      })
-      .then((data) => {
-        console.log("Shipment table data:", data)
-        setDecisions(data)
-      })
-      .catch((error) => {
-        console.error("Shipment table error:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  const recentDecisions = decisions.slice(0, 5)
-
-  const getRisk = (probability) => {
-    const value = Number(probability)
-
-    if (value < 0.3) {
-      return "Low"
-    }
-
-    if (value <= 0.5) {
-      return "Medium"
-    }
-
-    return "High"
-  }
-
   return (
     <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
 
       {/* Header */}
-
       <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
 
         <div>
@@ -59,6 +60,7 @@ function ShipmentTable() {
           </p>
         </div>
 
+        {/* View All */}
         <Link
           to="/decision-history"
           className="text-sm font-medium text-gray-600 hover:text-black"
@@ -69,137 +71,103 @@ function ShipmentTable() {
       </div>
 
 
-      {/* Loading */}
-
-      {loading && (
-        <div className="px-6 py-10 text-center text-sm text-gray-400">
-          Loading shipments...
-        </div>
-      )}
-
-
-      {/* Empty State */}
-
-      {!loading && recentDecisions.length === 0 && (
-        <div className="px-6 py-10 text-center text-sm text-gray-400">
-          No saved shipment decisions yet.
-        </div>
-      )}
-
-
       {/* Table */}
+      <div className="overflow-x-auto">
 
-      {!loading && recentDecisions.length > 0 && (
+        <table className="w-full text-left">
 
-        <div className="overflow-x-auto">
+          <thead>
+            <tr className="border-b border-gray-100 text-xs text-gray-400">
 
-          <table className="w-full min-w-[800px] text-left">
+              <th className="px-6 py-4 font-medium">
+                Shipment
+              </th>
 
-            <thead>
+              <th className="px-6 py-4 font-medium">
+                Supplier
+              </th>
 
-              <tr className="border-b border-gray-100 text-xs text-gray-400">
+              <th className="px-6 py-4 font-medium">
+                Product
+              </th>
 
-                <th className="px-6 py-4 font-medium">
-                  Shipment
-                </th>
+              <th className="px-6 py-4 font-medium">
+                Risk
+              </th>
 
-                <th className="px-6 py-4 font-medium">
-                  Supplier
-                </th>
+              <th className="px-6 py-4 font-medium">
+                Probability
+              </th>
 
-                <th className="px-6 py-4 font-medium">
-                  Product
-                </th>
+              <th className="px-6 py-4 font-medium">
+                Recommendation
+              </th>
 
-                <th className="px-6 py-4 font-medium">
-                  Risk
-                </th>
+            </tr>
+          </thead>
 
-                <th className="px-6 py-4 font-medium">
-                  Probability
-                </th>
 
-                <th className="px-6 py-4 font-medium">
-                  Recommendation
-                </th>
+          <tbody>
+
+            {shipments.map((shipment) => (
+
+              <tr
+                key={shipment.id}
+                className="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+              >
+
+                <td className="px-6 py-4">
+                  <span className="text-sm font-medium text-gray-900">
+                    {shipment.id}
+                  </span>
+                </td>
+
+
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {shipment.supplier}
+                </td>
+
+
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {shipment.product}
+                </td>
+
+
+                <td className="px-6 py-4">
+
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                      shipment.risk === "High"
+                        ? "bg-gray-900 text-white"
+                        : shipment.risk === "Medium"
+                        ? "bg-gray-200 text-gray-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {shipment.risk}
+                  </span>
+
+                </td>
+
+
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                  {shipment.probability}
+                </td>
+
+
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {shipment.action}
+                </td>
 
               </tr>
 
-            </thead>
+            ))}
 
+          </tbody>
 
-            <tbody>
+        </table>
 
-              {recentDecisions.map((decision) => {
-
-                const risk = getRisk(
-                  decision.delay_probability
-                )
-
-                return (
-
-                  <tr
-                    key={decision.id}
-                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50"
-                  >
-
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-gray-900">
-                        SHP-{String(decision.id).padStart(4, "0")}
-                      </span>
-                    </td>
-
-
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {decision.supplier}
-                    </td>
-
-
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {decision.product}
-                    </td>
-
-
-                    <td className="px-6 py-4">
-
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          risk === "High"
-                            ? "bg-gray-900 text-white"
-                            : risk === "Medium"
-                            ? "bg-gray-200 text-gray-700"
-                            : "bg-gray-100 text-gray-500"
-                        }`}
-                      >
-                        {risk}
-                      </span>
-
-                    </td>
-
-
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {(Number(
-                        decision.delay_probability
-                      ) * 100).toFixed(2)}%
-                    </td>
-
-
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {decision.selected_action}
-                    </td>
-
-                  </tr>
-
-                )
-              })}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      )}
+      </div>
 
     </div>
   )
