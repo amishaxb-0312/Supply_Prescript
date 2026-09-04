@@ -11,7 +11,7 @@ import Prediction from "./pages/Prediction"
 import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
 import Shipments from "./pages/Shipments"
-
+import Performance from "./pages/Performance"
 function Dashboard() {
 
   const [decisions, setDecisions] = useState([])
@@ -192,6 +192,7 @@ function App() {
               path="/shipments"
               element={<Shipments />}
             />
+            <Route path="/performance" element={<Performance />} />
 
           </Routes>
 
