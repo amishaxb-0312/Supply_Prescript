@@ -1,120 +1,127 @@
-import { Link } from "react-router-dom"
+import { NavLink, Link } from "react-router-dom"
 
 function Sidebar() {
+  const navItems = [
+    {
+      name: "Dashboard",
+      path: "/",
+    },
+    {
+      name: "Shipments",
+      path: "/predictions",
+    },
+    {
+      name: "Predictions",
+      path: "/predictions",
+    },
+    {
+      name: "Recommendations",
+      path: "/recommendations",
+    },
+    {
+      name: "Decision History",
+      path: "/decision-history",
+    },
+    {
+      name: "Performance",
+      path: "/performance",
+    },
+  ]
+
   return (
-    <aside className="sticky top-0 h-screen w-64 shrink-0 border-r border-gray-200 bg-white px-5 py-6">
+    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-gray-200 bg-white px-5 py-6">
 
       {/* Logo */}
-      <div className="mb-10 flex items-center gap-3 px-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white font-bold">
-          S
-        </div>
+      <div className="mb-8">
+        <Link
+          to="/"
+          className="flex items-center gap-3"
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-sm font-bold text-white">
+            SP
+          </div>
 
-        <span className="text-xl font-semibold tracking-tight">
-          SupplyPrescript
-        </span>
+          <div>
+            <h1 className="text-base font-bold text-gray-900">
+              SupplyPrescript
+            </h1>
+
+            <p className="text-xs text-gray-400">
+              AI Supply Chain
+            </p>
+          </div>
+        </Link>
       </div>
 
 
-      {/* Main Navigation */}
-      <nav className="space-y-1">
+      {/* New Shipment */}
+      <Link
+        to="/predictions"
+        className="mb-7 flex items-center justify-center rounded-xl bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+      >
+        + New Shipment
+      </Link>
 
-        <p className="mb-3 px-3 text-xs font-medium uppercase tracking-wider text-gray-400">
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1">
+
+        <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
           Workspace
         </p>
 
+        {navItems.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.path}
+            end={item.path === "/"}
+            className={({ isActive }) =>
+              `block rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                isActive
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+              }`
+            }
+          >
+            {item.name}
+          </NavLink>
+        )}
 
-        {/* Dashboard */}
-        <Link
-          to="/"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>▦</span>
-          Dashboard
-        </Link>
+        <div className="mt-8">
 
+          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            System
+          </p>
 
-        {/* Shipments */}
-        <Link
-          to="/shipments"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>◫</span>
-          Shipments
-        </Link>
+          <button
+            type="button"
+            className="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-500 transition hover:bg-gray-50 hover:text-gray-900"
+          >
+            Settings
+          </button>
 
-
-        {/* Predictions */}
-        <Link
-          to="/predictions"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>⌁</span>
-          Predictions
-        </Link>
-
-
-        {/* Recommendations */}
-        <Link
-          to="/recommendations"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>✦</span>
-          Recommendations
-        </Link>
-
-
-        {/* Decision History */}
-        <Link
-          to="/decision-history"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>☷</span>
-          Decision History
-        </Link>
-
-
-        {/* Performance */}
-        <Link
-          to="/performance"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        >
-          <span>↗</span>
-          Performance
-        </Link>
+        </div>
 
       </nav>
 
 
-      {/* Bottom */}
-      <div className="absolute bottom-6 left-5 right-5">
+      {/* User Profile */}
+      <div className="border-t border-gray-200 pt-5">
 
-        {/* Settings */}
-        <button className="mb-3 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900">
-          <span>⚙</span>
-          Settings
-        </button>
+        <div className="flex items-center gap-3">
 
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700">
+            SM
+          </div>
 
-        {/* User */}
-        <div className="border-t border-gray-200 pt-4">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-gray-900">
+              Supply Manager
+            </p>
 
-          <div className="flex items-center gap-3 px-2">
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold">
-              A
-            </div>
-
-            <div>
-              <p className="text-sm font-medium text-gray-900">
-                Admin
-              </p>
-
-              <p className="text-xs text-gray-400">
-                Supply Manager
-              </p>
-            </div>
-
+            <p className="truncate text-xs text-gray-400">
+              Admin
+            </p>
           </div>
 
         </div>
