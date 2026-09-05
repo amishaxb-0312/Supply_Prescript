@@ -33,10 +33,7 @@ function Sidebar() {
 
       {/* Logo */}
       <div className="mb-8">
-        <Link
-          to="/"
-          className="flex items-center gap-3"
-        >
+        <Link to="/" className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-sm font-bold text-white">
             SP
           </div>
@@ -85,8 +82,10 @@ function Sidebar() {
           >
             {item.name}
           </NavLink>
-        )}
+        ))}
 
+
+        {/* System */}
         <div className="mt-8">
 
           <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
