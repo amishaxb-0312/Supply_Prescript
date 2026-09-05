@@ -44,10 +44,7 @@ model = joblib.load("ml/xgboost_delay_model.pkl")
 preprocessor = joblib.load("ml/preprocessor.pkl")
 
 
-# =========================================================
-# DATABASE
-# =========================================================
-
+# database
 DATABASE_URL = "sqlite:///./supplyprescript.db"
 
 engine = create_engine(
