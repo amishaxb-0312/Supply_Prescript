@@ -1,527 +1,341 @@
 import { useState } from "react"
 
 function Recommendations() {
-  const [formData, setFormData] = useState({
-    supplier: "Supplier A",
-    product: "Microchips",
-    distance_km: 1200,
-    order_quantity: 1200,
-    supplier_reliability: 0.85,
-    historical_delay_rate: 0.20,
-    lead_time_days: 15,
-    inventory_level: 800,
-    supplier_capacity: 5000,
-    shipping_cost: 12000,
-    weather_risk: 0.40,
-    demand_forecast: 1200,
-    budget: 20000,
-    max_acceptable_delay: 7,
+  const [form, setForm] = useState({
+    supplier: "",
+    product: "",
+    delay_probability: "",
+    order_quantity: "",
+    shipping_cost: "",
+    budget: "",
+    max_acceptable_delay: "7",
   })
 
-  const [result, setResult] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [savedAction, setSavedAction] = useState("")
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
+  const handleChange = (event) => {
+    setForm((previous) => ({
+      ...previous,
+      [event.target.name]: event.target.value,
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
     setLoading(true)
     setError("")
-    setResult(null)
+    setRecommendations([])
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/optimize",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            supplier: formData.supplier,
-            product: formData.product,
-            distance_km: Number(formData.distance_km),
-            order_quantity: Number(formData.order_quantity),
-            supplier_reliability: Number(formData.supplier_reliability),
-            historical_delay_rate: Number(
-              formData.historical_delay_rate
-            ),
-            lead_time_days: Number(formData.lead_time_days),
-            inventory_level: Number(formData.inventory_level),
-            supplier_capacity: Number(
-              formData.supplier_capacity
-            ),
-            shipping_cost: Number(formData.shipping_cost),
-            weather_risk: Number(formData.weather_risk),
-            demand_forecast: Number(formData.demand_forecast),
-            budget: Number(formData.budget),
-            max_acceptable_delay: Number(
-              formData.max_acceptable_delay
-            ),
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error("Optimization request failed")
+      const payload = {
+        supplier: form.supplier,
+        product: form.product,
+        delay_probability: Number(form.delay_probability),
+        order_quantity: Number(form.order_quantity),
+        shipping_cost: Number(form.shipping_cost),
+        budget: Number(form.budget),
+        max_acceptable_delay: Number(form.max_acceptable_delay),
       }
+
+      const response = await fetch("http://127.0.0.1:8000/recommend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
 
       const data = await response.json()
 
-      console.log("Optimization response:", data)
+      if (!response.ok) {
+        throw new Error(data.detail || "Unable to generate recommendations")
+      }
 
-      setResult(data)
+      setRecommendations(data.recommendations || [])
     } catch (err) {
-      console.error(err)
-      setError(
-        "Unable to connect to the optimization server."
-      )
+      setError(err.message || "Unable to connect to backend")
     } finally {
       setLoading(false)
     }
   }
 
-  const bestRecommendation =
-    result?.recommendations?.[0]
+  const saveDecision = async (recommendation) => {
+    try {
+      setSavedAction("Saving...")
+
+      const payload = {
+        supplier: form.supplier,
+        product: form.product,
+        delay_probability: Number(form.delay_probability),
+        selected_action: recommendation.action,
+        action_cost: Number(recommendation.cost),
+        expected_delay_days: Number(recommendation.delay_days),
+        remaining_delay_risk:
+          Number(recommendation.remaining_delay_risk) / 100,
+      }
+
+      const response = await fetch("http://127.0.0.1:8000/decision", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to save decision")
+      }
+
+      setSavedAction(`Saved: ${recommendation.action}`)
+    } catch (err) {
+      setSavedAction(err.message || "Failed to save decision")
+    }
+  }
 
   return (
-    <div className="max-w-6xl">
-
-      {/* Header */}
-
+    <div className="space-y-6">
       <div>
-        <p className="text-sm font-medium text-gray-400">
-          Decision Support
-        </p>
+        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-gray-400">
+          <span>Workspace</span>
+          <span>/</span>
+          <span className="text-gray-600">Recommendations</span>
+        </div>
 
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
-          Recommendations
+        <h1 className="text-3xl font-bold tracking-tight text-gray-950">
+          Decision Recommendations
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          Get optimized actions to reduce shipment delay risk.
+          Find the best mitigation strategy based on risk, cost and constraints.
         </p>
       </div>
 
+      <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
+        <form
+          onSubmit={handleSubmit}
+          className="h-fit rounded-2xl border border-gray-200 bg-white shadow-sm"
+        >
+          <div className="border-b border-gray-100 px-6 py-5">
+            <h2 className="text-base font-bold text-gray-950">
+              Optimization Inputs
+            </h2>
 
-      {/* Input Form */}
-
-      <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Optimization Parameters
-          </h2>
-
-          <p className="mt-1 text-sm text-gray-400">
-            Enter shipment information to generate an optimized recommendation.
-          </p>
-        </div>
-
-
-        <form onSubmit={handleSubmit}>
-
-          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-
-            {/* Supplier */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Supplier
-              </label>
-
-              <input
-                type="text"
-                name="supplier"
-                value={formData.supplier}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
-
-            {/* Product */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Product
-              </label>
-
-              <input
-                type="text"
-                name="product"
-                value={formData.product}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
-
-            {/* Order Quantity */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Order Quantity
-              </label>
-
-              <input
-                type="number"
-                name="order_quantity"
-                value={formData.order_quantity}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
-
-            {/* Shipping Cost */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Shipping Cost
-              </label>
-
-              <input
-                type="number"
-                name="shipping_cost"
-                value={formData.shipping_cost}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
-
-            {/* Budget */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Optimization Budget
-              </label>
-
-              <input
-                type="number"
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
-
-            {/* Maximum Delay */}
-
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Maximum Acceptable Delay
-              </label>
-
-              <input
-                type="number"
-                name="max_acceptable_delay"
-                value={formData.max_acceptable_delay}
-                onChange={handleChange}
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-gray-500"
-              />
-            </div>
-
+            <p className="mt-1 text-xs text-gray-400">
+              Define your shipment and operational constraints.
+            </p>
           </div>
 
+          <div className="space-y-5 p-6">
+            {[
+              ["supplier", "Supplier", "Supplier A", "text"],
+              ["product", "Product", "Microchips", "text"],
+              ["delay_probability", "Delay Probability", "0.65", "number"],
+              ["order_quantity", "Order Quantity", "1200", "number"],
+              ["shipping_cost", "Shipping Cost", "10000", "number"],
+              ["budget", "Available Budget", "15000", "number"],
+              [
+                "max_acceptable_delay",
+                "Max Acceptable Delay",
+                "7",
+                "number",
+              ],
+            ].map(([name, label, placeholder, type]) => (
+              <div key={name}>
+                <label className="mb-2 block text-xs font-semibold text-gray-700">
+                  {label}
+                </label>
 
-          {error && (
-            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
-              {error}
-            </div>
-          )}
+                <input
+                  name={name}
+                  type={type}
+                  value={form[name]}
+                  onChange={handleChange}
+                  placeholder={placeholder}
+                  step={name === "delay_probability" ? "0.01" : "1"}
+                  min={name === "delay_probability" ? "0" : undefined}
+                  max={name === "delay_probability" ? "1" : undefined}
+                  required
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-900/5"
+                />
+              </div>
+            ))}
 
-
-          <div className="mt-7 flex justify-end">
+            {error && (
+              <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-xl bg-gray-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-60"
             >
-              {loading
-                ? "Optimizing..."
-                : "Generate Recommendation"}
+              {loading ? "Optimizing..." : "Generate Recommendations"}
             </button>
-
           </div>
-
         </form>
 
-      </div>
-
-
-      {/* Recommendation Result */}
-
-      {result && bestRecommendation && (
-
-        <div className="mt-6">
-
-          {/* Main Recommendation */}
-
-          <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-
-            <div className="flex items-start justify-between">
-
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-100 px-6 py-5">
+            <div className="flex items-center justify-between">
               <div>
-
-                <p className="text-sm font-medium text-gray-400">
-                  Recommended Action
-                </p>
-
-                <h2 className="mt-2 text-2xl font-semibold text-gray-900">
-                  {bestRecommendation.action}
+                <h2 className="text-base font-bold text-gray-950">
+                  Recommended Actions
                 </h2>
 
-                <p className="mt-2 text-sm text-gray-500">
-                  Best option based on cost, delay and remaining risk.
+                <p className="mt-1 text-xs text-gray-400">
+                  Ranked from best to least suitable option.
                 </p>
-                <button
-  onClick={async () => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/decision",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            supplier: formData.supplier,
-            product: formData.product,
-            delay_probability: result.delay_probability,
-            selected_action: bestRecommendation.action,
-            action_cost: bestRecommendation.cost,
-            expected_delay_days:
-              bestRecommendation.expected_delay_days,
-            remaining_delay_risk:
-              bestRecommendation.remaining_delay_risk / 100,
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error("Failed to save decision")
-      }
-
-      const data = await response.json()
-
-      alert(`Decision saved successfully! ID: ${data.decision_id}`)
-    } catch (error) {
-      console.error(error)
-      alert("Unable to save decision.")
-    }
-  }}
-  className="mt-5 rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
->
-  Save Decision
-</button>
-
               </div>
 
-              <span className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white">
-                Optimized
-              </span>
-
+              {recommendations.length > 0 && (
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-bold text-gray-500">
+                  {recommendations.length} options
+                </span>
+              )}
             </div>
-
-
-            {/* Metrics */}
-
-            <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-4">
-
-              <div className="rounded-xl bg-gray-50 p-5">
-
-                <p className="text-sm text-gray-500">
-                  Estimated Cost
-                </p>
-
-                <p className="mt-2 text-xl font-semibold text-gray-900">
-                  ₹{bestRecommendation.cost.toLocaleString()}
-                </p>
-
-              </div>
-
-
-              <div className="rounded-xl bg-gray-50 p-5">
-
-                <p className="text-sm text-gray-500">
-                  Expected Delay
-                </p>
-
-                <p className="mt-2 text-xl font-semibold text-gray-900">
-                  {bestRecommendation.expected_delay_days} days
-                </p>
-
-              </div>
-
-
-              <div className="rounded-xl bg-gray-50 p-5">
-
-                <p className="text-sm text-gray-500">
-                  Remaining Risk
-                </p>
-
-                <p className="mt-2 text-xl font-semibold text-gray-900">
-                  {bestRecommendation.remaining_delay_risk}%
-                </p>
-
-              </div>
-
-
-              <div className="rounded-xl bg-gray-50 p-5">
-
-                <p className="text-sm text-gray-500">
-                  Original Risk
-                </p>
-
-                <p className="mt-2 text-xl font-semibold text-gray-900">
-                  {result.delay_percentage}%
-                </p>
-
-              </div>
-
-            </div>
-
           </div>
 
+          <div className="space-y-3 p-6">
+            {recommendations.length === 0 ? (
+              <div className="rounded-xl bg-gray-50 px-6 py-12 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+                  ✦
+                </div>
 
-          {/* Available Recommendations */}
+                <p className="mt-4 text-sm font-semibold text-gray-700">
+                  No recommendations yet
+                </p>
 
-          <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+                <p className="mt-1 text-xs text-gray-400">
+                  Submit the optimization inputs to see recommended actions.
+                </p>
+              </div>
+            ) : (
+              recommendations.map((recommendation, index) => {
+                const isBest = index === 0
 
-            <div>
+                return (
+                  <div
+                    key={`${recommendation.action}-${index}`}
+                    className={`rounded-2xl border p-5 transition ${
+                      isBest
+                        ? "border-gray-900 bg-gray-950 text-white"
+                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
+                    }`}
+                  >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
+                            isBest
+                              ? "bg-white/10 text-white"
+                              : "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {index + 1}
+                        </div>
 
-              <p className="text-sm font-medium text-gray-400">
-                Optimization Results
-              </p>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3
+                              className={`text-sm font-bold ${
+                                isBest ? "text-white" : "text-gray-900"
+                              }`}
+                            >
+                              {recommendation.action}
+                            </h3>
 
-              <h2 className="mt-1 text-xl font-semibold text-gray-900">
-                Available Actions
-              </h2>
+                            {isBest && (
+                              <span className="rounded-full bg-white/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">
+                                Best Option
+                              </span>
+                            )}
+                          </div>
 
-            </div>
+                          <p
+                            className={`mt-1 text-xs ${
+                              isBest ? "text-gray-400" : "text-gray-400"
+                            }`}
+                          >
+                            Score:{" "}
+                            {Number(recommendation.score).toFixed(3)}
+                          </p>
+                        </div>
+                      </div>
 
-
-            <div className="mt-6 overflow-x-auto">
-
-              <table className="w-full text-left">
-
-                <thead>
-
-                  <tr className="border-b border-gray-100 text-xs text-gray-400">
-
-                    <th className="px-4 py-4 font-medium">
-                      Action
-                    </th>
-
-                    <th className="px-4 py-4 font-medium">
-                      Cost
-                    </th>
-
-                    <th className="px-4 py-4 font-medium">
-                      Expected Delay
-                    </th>
-
-                    <th className="px-4 py-4 font-medium">
-                      Remaining Risk
-                    </th>
-
-                    <th className="px-4 py-4 font-medium">
-                      Score
-                    </th>
-
-                    <th className="px-4 py-4 font-medium">
-                      Status
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                  {result.recommendations.map(
-                    (recommendation, index) => (
-
-                      <tr
-                        key={recommendation.action}
-                        className="border-b border-gray-50 last:border-0"
+                      <button
+                        type="button"
+                        onClick={() => saveDecision(recommendation)}
+                        className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition ${
+                          isBest
+                            ? "bg-white text-gray-950 hover:bg-gray-100"
+                            : "bg-gray-950 text-white hover:bg-gray-800"
+                        }`}
                       >
+                        Save Decision
+                      </button>
+                    </div>
 
-                        <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                          {recommendation.action}
-                        </td>
+                    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {[
+                        ["Cost", `₹${Number(recommendation.cost).toFixed(0)}`],
+                        ["Delay", `${recommendation.delay_days} days`],
+                        [
+                          "Capacity",
+                          `${Number(recommendation.capacity).toFixed(0)}`,
+                        ],
+                        [
+                          "Remaining Risk",
+                          `${Number(
+                            recommendation.remaining_delay_risk
+                          ).toFixed(1)}%`,
+                        ],
+                      ].map(([label, value]) => (
+                        <div
+                          key={label}
+                          className={`rounded-xl p-3 ${
+                            isBest ? "bg-white/5" : "bg-gray-50"
+                          }`}
+                        >
+                          <p
+                            className={`text-[9px] font-semibold uppercase tracking-wider ${
+                              isBest ? "text-gray-500" : "text-gray-400"
+                            }`}
+                          >
+                            {label}
+                          </p>
 
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          ₹{recommendation.cost.toLocaleString()}
-                        </td>
+                          <p
+                            className={`mt-1 text-sm font-bold ${
+                              isBest ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            {value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })
+            )}
 
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          {recommendation.expected_delay_days} days
-                        </td>
-
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          {recommendation.remaining_delay_risk}%
-                        </td>
-
-                        <td className="px-4 py-4 text-sm text-gray-600">
-                          {recommendation.score}
-                        </td>
-
-                        <td className="px-4 py-4">
-
-                          {index === 0 ? (
-
-                            <span className="rounded-full bg-gray-900 px-2.5 py-1 text-xs font-medium text-white">
-                              Recommended
-                            </span>
-
-                          ) : (
-
-                            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                              Available
-                            </span>
-
-                          )}
-
-                        </td>
-
-                      </tr>
-
-                    )
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
+            {savedAction && (
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-600">
+                {savedAction}
+              </div>
+            )}
           </div>
-
         </div>
-
-      )}
-
+      </div>
     </div>
   )
 }

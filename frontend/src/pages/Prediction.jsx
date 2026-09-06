@@ -1,838 +1,337 @@
 import { useState } from "react"
 
+const initialForm = {
+  supplier: "",
+  product: "",
+  distance_km: "",
+  order_quantity: "",
+  supplier_reliability: "",
+  historical_delay_rate: "",
+  lead_time_days: "",
+  inventory_level: "",
+  supplier_capacity: "",
+  shipping_cost: "",
+  weather_risk: "",
+  demand_forecast: "",
+}
+
 function Prediction() {
-  const [formData, setFormData] = useState({
-    supplier: "",
-    product: "",
-    distance_km: "",
-    order_quantity: "",
-    supplier_reliability: "",
-    historical_delay_rate: "",
-    lead_time_days: "",
-    inventory_level: "",
-    supplier_capacity: "",
-    shipping_cost: "",
-    weather_risk: "",
-    demand_forecast: "",
-    budget: "",
-    max_acceptable_delay: "",
-  })
-
+  const [form, setForm] = useState(initialForm)
   const [result, setResult] = useState(null)
-  const [recommendations, setRecommendations] = useState([])
-  const [selectedAction, setSelectedAction] = useState(null)
-
   const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-
   const [error, setError] = useState("")
-  const [saveMessage, setSaveMessage] = useState("")
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
+  const handleChange = (event) => {
+    const { name, value } = event.target
 
-    setFormData((prev) => ({
-      ...prev,
+    setForm((previous) => ({
+      ...previous,
       [name]: value,
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
     setLoading(true)
     setError("")
-    setSaveMessage("")
     setResult(null)
-    setRecommendations([])
-    setSelectedAction(null)
-
-    const shipmentData = {
-      supplier: formData.supplier,
-      product: formData.product,
-      distance_km: Number(formData.distance_km),
-      order_quantity: Number(formData.order_quantity),
-      supplier_reliability: Number(formData.supplier_reliability),
-      historical_delay_rate: Number(formData.historical_delay_rate),
-      lead_time_days: Number(formData.lead_time_days),
-      inventory_level: Number(formData.inventory_level),
-      supplier_capacity: Number(formData.supplier_capacity),
-      shipping_cost: Number(formData.shipping_cost),
-      weather_risk: Number(formData.weather_risk),
-      demand_forecast: Number(formData.demand_forecast),
-      budget: Number(formData.budget),
-      max_acceptable_delay: Number(formData.max_acceptable_delay),
-    }
 
     try {
-      // --------------------------------
-      // STEP 1: PREDICTION
-      // --------------------------------
-
-      const predictionResponse = await fetch(
-        "http://127.0.0.1:8000/predict",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(shipmentData),
-        }
-      )
-
-      if (!predictionResponse.ok) {
-        throw new Error("Prediction request failed")
+      const payload = {
+        supplier: form.supplier,
+        product: form.product,
+        distance_km: Number(form.distance_km),
+        order_quantity: Number(form.order_quantity),
+        supplier_reliability: Number(form.supplier_reliability),
+        historical_delay_rate: Number(form.historical_delay_rate),
+        lead_time_days: Number(form.lead_time_days),
+        inventory_level: Number(form.inventory_level),
+        supplier_capacity: Number(form.supplier_capacity),
+        shipping_cost: Number(form.shipping_cost),
+        weather_risk: Number(form.weather_risk),
+        demand_forecast: Number(form.demand_forecast),
       }
 
-      const predictionData = await predictionResponse.json()
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
 
-      console.log("Prediction response:", predictionData)
+      const data = await response.json()
 
-      setResult(predictionData)
-
-
-      // --------------------------------
-      // STEP 2: OPTIMIZATION
-      // --------------------------------
-
-      const optimizeResponse = await fetch(
-        "http://127.0.0.1:8000/optimize",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(shipmentData),
-        }
-      )
-
-      if (!optimizeResponse.ok) {
-        throw new Error("Optimization request failed")
+      if (!response.ok) {
+        throw new Error(data.detail || "Prediction failed")
       }
 
-      const optimizeData = await optimizeResponse.json()
-
-      console.log("Optimization response:", optimizeData)
-
-      setRecommendations(optimizeData.recommendations || [])
-
+      setResult(data)
     } catch (err) {
-      console.error(err)
-
-      setError(
-        err.message || "Unable to connect to the prediction server."
-      )
+      setError(err.message || "Unable to connect to backend")
     } finally {
       setLoading(false)
     }
   }
 
-
-  // --------------------------------
-  // SAVE DECISION
-  // --------------------------------
-
-  const handleSaveDecision = async () => {
-    if (!selectedAction || !result) {
-      return
+  const getRiskStyle = (risk) => {
+    if (risk === "HIGH") {
+      return "bg-red-50 text-red-600 border-red-100"
     }
 
-    setSaving(true)
-    setSaveMessage("")
-
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/decision",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            supplier: formData.supplier,
-            product: formData.product,
-
-            delay_probability: result.delay_probability,
-
-            selected_action: selectedAction.action,
-
-            action_cost: selectedAction.cost,
-
-            expected_delay_days:
-              selectedAction.expected_delay_days,
-
-            remaining_delay_risk:
-              selectedAction.remaining_delay_risk,
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error("Failed to save decision")
-      }
-
-      const data = await response.json()
-
-      console.log("Decision saved:", data)
-
-      setSaveMessage("Decision saved successfully.")
-
-    } catch (err) {
-      console.error(err)
-
-      setSaveMessage("Unable to save decision.")
-
-    } finally {
-      setSaving(false)
+    if (risk === "MEDIUM") {
+      return "bg-amber-50 text-amber-600 border-amber-100"
     }
+
+    return "bg-emerald-50 text-emerald-600 border-emerald-100"
   }
 
+  const fields = [
+    {
+      name: "supplier",
+      label: "Supplier",
+      type: "text",
+      placeholder: "e.g. Supplier A",
+    },
+    {
+      name: "product",
+      label: "Product",
+      type: "text",
+      placeholder: "e.g. Microchips",
+    },
+    {
+      name: "distance_km",
+      label: "Distance",
+      type: "number",
+      placeholder: "e.g. 850",
+      suffix: "km",
+    },
+    {
+      name: "order_quantity",
+      label: "Order Quantity",
+      type: "number",
+      placeholder: "e.g. 1200",
+      suffix: "units",
+    },
+    {
+      name: "supplier_reliability",
+      label: "Supplier Reliability",
+      type: "number",
+      placeholder: "0 - 1",
+      step: "0.01",
+    },
+    {
+      name: "historical_delay_rate",
+      label: "Historical Delay Rate",
+      type: "number",
+      placeholder: "0 - 1",
+      step: "0.01",
+    },
+    {
+      name: "lead_time_days",
+      label: "Lead Time",
+      type: "number",
+      placeholder: "e.g. 7",
+      suffix: "days",
+    },
+    {
+      name: "inventory_level",
+      label: "Inventory Level",
+      type: "number",
+      placeholder: "e.g. 500",
+      suffix: "units",
+    },
+    {
+      name: "supplier_capacity",
+      label: "Supplier Capacity",
+      type: "number",
+      placeholder: "e.g. 2500",
+      suffix: "units",
+    },
+    {
+      name: "shipping_cost",
+      label: "Shipping Cost",
+      type: "number",
+      placeholder: "e.g. 10000",
+      suffix: "₹",
+    },
+    {
+      name: "weather_risk",
+      label: "Weather Risk",
+      type: "number",
+      placeholder: "0 - 1",
+      step: "0.01",
+    },
+    {
+      name: "demand_forecast",
+      label: "Demand Forecast",
+      type: "number",
+      placeholder: "e.g. 1500",
+      suffix: "units",
+    },
+  ]
 
   return (
-    <div className="max-w-6xl">
-
-      {/* -------------------------------- */}
-      {/* PAGE HEADER */}
-      {/* -------------------------------- */}
-
+    <div className="space-y-6">
       <div>
+        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-gray-400">
+          <span>Workspace</span>
+          <span>/</span>
+          <span className="text-gray-600">Predictions</span>
+        </div>
 
-        <p className="text-sm font-medium text-gray-400">
-          Analysis
-        </p>
-
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-950">
           Shipment Prediction
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          Analyze shipment data and predict the probability of delay.
+          Enter shipment details to predict the probability of delivery delay.
         </p>
-
       </div>
 
-
-      {/* -------------------------------- */}
-      {/* PREDICTION FORM */}
-      {/* -------------------------------- */}
-
-      <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-
-        <div>
-
-          <h2 className="text-lg font-semibold text-gray-900">
-            Shipment Details
-          </h2>
-
-          <p className="mt-1 text-sm text-gray-400">
-            Enter the required shipment information.
-          </p>
-
-        </div>
-
-
-        <form onSubmit={handleSubmit}>
-
-          <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-2">
-
-
-            {/* Supplier */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Supplier
-              </label>
-
-              <input
-                type="text"
-                name="supplier"
-                value={formData.supplier}
-                onChange={handleChange}
-                placeholder="e.g. Supplier A"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Product */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Product
-              </label>
-
-              <input
-                type="text"
-                name="product"
-                value={formData.product}
-                onChange={handleChange}
-                placeholder="e.g. Electronics"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Distance */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Distance (km)
-              </label>
-
-              <input
-                type="number"
-                name="distance_km"
-                value={formData.distance_km}
-                onChange={handleChange}
-                placeholder="e.g. 1200"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Order Quantity */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Order Quantity
-              </label>
-
-              <input
-                type="number"
-                name="order_quantity"
-                value={formData.order_quantity}
-                onChange={handleChange}
-                placeholder="e.g. 500"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Supplier Reliability */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Supplier Reliability
-              </label>
-
-              <input
-                type="number"
-                step="0.01"
-                name="supplier_reliability"
-                value={formData.supplier_reliability}
-                onChange={handleChange}
-                placeholder="e.g. 0.85"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Historical Delay Rate */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Historical Delay Rate
-              </label>
-
-              <input
-                type="number"
-                step="0.01"
-                name="historical_delay_rate"
-                value={formData.historical_delay_rate}
-                onChange={handleChange}
-                placeholder="e.g. 0.20"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Lead Time */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Lead Time (days)
-              </label>
-
-              <input
-                type="number"
-                name="lead_time_days"
-                value={formData.lead_time_days}
-                onChange={handleChange}
-                placeholder="e.g. 15"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Inventory Level */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Inventory Level
-              </label>
-
-              <input
-                type="number"
-                name="inventory_level"
-                value={formData.inventory_level}
-                onChange={handleChange}
-                placeholder="e.g. 800"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Supplier Capacity */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Supplier Capacity
-              </label>
-
-              <input
-                type="number"
-                name="supplier_capacity"
-                value={formData.supplier_capacity}
-                onChange={handleChange}
-                placeholder="e.g. 5000"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Shipping Cost */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Shipping Cost
-              </label>
-
-              <input
-                type="number"
-                name="shipping_cost"
-                value={formData.shipping_cost}
-                onChange={handleChange}
-                placeholder="e.g. 15000"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Weather Risk */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Weather Risk
-              </label>
-
-              <input
-                type="number"
-                step="0.01"
-                name="weather_risk"
-                value={formData.weather_risk}
-                onChange={handleChange}
-                placeholder="e.g. 0.40"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Demand Forecast */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Demand Forecast
-              </label>
-
-              <input
-                type="number"
-                name="demand_forecast"
-                value={formData.demand_forecast}
-                onChange={handleChange}
-                placeholder="e.g. 1200"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Budget */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Budget
-              </label>
-
-              <input
-                type="number"
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                placeholder="e.g. 20000"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
-
-            {/* Maximum Acceptable Delay */}
-
-            <div>
-
-              <label className="text-sm font-medium text-gray-700">
-                Maximum Acceptable Delay (days)
-              </label>
-
-              <input
-                type="number"
-                name="max_acceptable_delay"
-                value={formData.max_acceptable_delay}
-                onChange={handleChange}
-                placeholder="e.g. 7"
-                required
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-500"
-              />
-
-            </div>
-
+      <div className="grid gap-6 xl:grid-cols-[1.5fr_0.8fr]">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border border-gray-200 bg-white shadow-sm"
+        >
+          <div className="border-b border-gray-100 px-6 py-5">
+            <h2 className="text-base font-bold text-gray-950">
+              Shipment Details
+            </h2>
+
+            <p className="mt-1 text-xs text-gray-400">
+              Provide the shipment and supplier information.
+            </p>
           </div>
 
+          <div className="grid gap-5 p-6 sm:grid-cols-2">
+            {fields.map((field) => (
+              <div
+                key={field.name}
+                className={
+                  field.name === "supplier" || field.name === "product"
+                    ? "sm:col-span-1"
+                    : ""
+                }
+              >
+                <label className="mb-2 block text-xs font-semibold text-gray-700">
+                  {field.label}
+                </label>
 
-          {/* ERROR */}
+                <div className="relative">
+                  <input
+                    name={field.name}
+                    type={field.type}
+                    value={form[field.name]}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    step={field.step}
+                    required
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-900/5"
+                  />
+
+                  {field.suffix && (
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">
+                      {field.suffix}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
 
           {error && (
-
-            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+            <div className="mx-6 mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
-
           )}
 
-
-          {/* SUBMIT BUTTON */}
-
-          <div className="mt-8 flex justify-end">
-
+          <div className="border-t border-gray-100 bg-gray-50/60 px-6 py-5">
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-xl bg-gray-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Analyzing..." : "Analyze Shipment"}
+              {loading ? "Analyzing Shipment..." : "Predict Delay Risk"}
             </button>
-
           </div>
-
         </form>
 
-      </div>
-
-
-      {/* -------------------------------- */}
-      {/* PREDICTION RESULT */}
-      {/* -------------------------------- */}
-
-      {result && (
-
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-
-          <p className="text-sm font-medium text-gray-400">
+        <div className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
             Prediction Result
           </p>
 
-          <h2 className="mt-1 text-2xl font-semibold text-gray-900">
-            Shipment Analysis
-          </h2>
+          {!result ? (
+            <div className="mt-8 rounded-xl bg-gray-50 px-5 py-10 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+                ◔
+              </div>
 
-
-          <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-
-
-            {/* Delay Percentage */}
-
-            <div className="rounded-xl bg-gray-50 p-5">
-
-              <p className="text-sm text-gray-500">
-                Delay Percentage
+              <p className="mt-4 text-sm font-semibold text-gray-700">
+                No prediction yet
               </p>
 
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {result.delay_percentage}%
+              <p className="mt-1 text-xs leading-5 text-gray-400">
+                Complete the shipment form to generate an AI risk assessment.
               </p>
-
             </div>
+          ) : (
+            <div className="mt-6 space-y-5">
+              <div className="rounded-2xl bg-gray-950 p-5 text-white">
+                <p className="text-xs text-gray-400">Delay Probability</p>
 
+                <p className="mt-2 text-4xl font-bold">
+                  {Number(result.delay_percentage).toFixed(1)}%
+                </p>
 
-            {/* Delay Probability */}
-
-            <div className="rounded-xl bg-gray-50 p-5">
-
-              <p className="text-sm text-gray-500">
-                Delay Probability
-              </p>
-
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {(result.delay_probability * 100).toFixed(2)}%
-              </p>
-
-            </div>
-
-
-            {/* Risk Level */}
-
-            <div className="rounded-xl bg-gray-50 p-5">
-
-              <p className="text-sm text-gray-500">
-                Risk Level
-              </p>
-
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {result.risk_level}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* -------------------------------- */}
-      {/* RECOMMENDED ACTIONS */}
-      {/* -------------------------------- */}
-
-      {recommendations.length > 0 && (
-
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
-
-          <p className="text-sm font-medium text-gray-400">
-            Optimization
-          </p>
-
-          <h2 className="mt-1 text-2xl font-semibold text-gray-900">
-            Recommended Actions
-          </h2>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Recommended supply-chain actions based on cost, capacity and delay risk.
-          </p>
-
-
-          <div className="mt-6 space-y-4">
-
-            {recommendations.map((recommendation, index) => (
+                <p className="mt-1 text-xs text-gray-400">
+                  Estimated shipment delay risk
+                </p>
+              </div>
 
               <div
-                key={index}
-                className={`rounded-xl border p-5 transition ${
-                  selectedAction?.action === recommendation.action
-                    ? "border-black bg-gray-50"
-                    : "border-gray-200"
-                }`}
+                className={`rounded-xl border px-4 py-4 ${getRiskStyle(
+                  result.risk_level
+                )}`}
               >
-
-
-                {/* ACTION HEADER */}
-
                 <div className="flex items-center justify-between">
-
-                  <div>
-
-                    <p className="text-base font-semibold text-gray-900">
-                      {recommendation.action}
-                    </p>
-
-                    <p className="mt-1 text-sm text-gray-500">
-                      Expected delay: {recommendation.expected_delay_days} days
-                    </p>
-
-                  </div>
-
-
-                  <span className="text-sm font-semibold text-gray-900">
-                    ₹{recommendation.cost}
+                  <span className="text-xs font-semibold uppercase tracking-wider">
+                    Risk Level
                   </span>
 
+                  <span className="text-sm font-bold">
+                    {result.risk_level}
+                  </span>
                 </div>
-
-
-                {/* ACTION DETAILS */}
-
-                <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
-
-
-                  {/* Remaining Risk */}
-
-                  <div>
-
-                    <p className="text-xs text-gray-400">
-                      Remaining Risk
-                    </p>
-
-                    <p className="mt-1 text-sm font-medium text-gray-700">
-                      {Number(
-                        recommendation.remaining_delay_risk
-                      ).toFixed(2)}
-                      %
-                    </p>
-
-                  </div>
-
-
-                  {/* Score */}
-
-                  <div>
-
-                    <p className="text-xs text-gray-400">
-                      Score
-                    </p>
-
-                    <p className="mt-1 text-sm font-medium text-gray-700">
-                      {recommendation.score}
-                    </p>
-
-                  </div>
-
-
-                  {/* Rank */}
-
-                  <div>
-
-                    <p className="text-xs text-gray-400">
-                      Rank
-                    </p>
-
-                    <p className="mt-1 text-sm font-medium text-gray-700">
-                      #{index + 1}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* SELECT ACTION */}
-
-                <div className="mt-5 flex justify-end">
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedAction(recommendation)
-                      setSaveMessage("")
-                    }}
-                    className={`rounded-xl px-5 py-2.5 text-sm font-medium transition ${
-                      selectedAction?.action === recommendation.action
-                        ? "bg-black text-white"
-                        : "border border-gray-200 bg-white text-gray-900 hover:bg-gray-50"
-                    }`}
-                  >
-                    {selectedAction?.action === recommendation.action
-                      ? "✓ Selected"
-                      : "Select Action"}
-                  </button>
-
-                </div>
-
               </div>
 
-            ))}
-
-
-            {/* -------------------------------- */}
-            {/* SAVE SELECTED DECISION */}
-            {/* -------------------------------- */}
-
-            {selectedAction && (
-
-              <div className="mt-6 border-t border-gray-200 pt-6">
-
-                <div className="flex items-center justify-between">
-
-                  <div>
-
-                    <p className="text-sm text-gray-400">
-                      Selected Action
-                    </p>
-
-                    <p className="mt-1 text-base font-semibold text-gray-900">
-                      {selectedAction.action}
-                    </p>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    onClick={handleSaveDecision}
-                    disabled={saving}
-                    className="rounded-xl bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {saving ? "Saving..." : "Save Decision"}
-                  </button>
-
-                </div>
-
-
-                {/* SAVE MESSAGE */}
-
-                {saveMessage && (
-
-                  <p className="mt-4 text-sm text-gray-600">
-                    {saveMessage}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-gray-50 p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                    Probability
                   </p>
 
-                )}
+                  <p className="mt-1 text-lg font-bold text-gray-900">
+                    {(Number(result.delay_probability) * 100).toFixed(1)}%
+                  </p>
+                </div>
 
+                <div className="rounded-xl bg-gray-50 p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                    Status
+                  </p>
+
+                  <p className="mt-1 text-lg font-bold text-gray-900">
+                    Ready
+                  </p>
+                </div>
               </div>
-
-            )}
-
-          </div>
-
+            </div>
+          )}
         </div>
-
-      )}
-
+      </div>
     </div>
   )
 }
