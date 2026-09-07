@@ -42,6 +42,7 @@ function RiskDistribution() {
 
   const getPercentage = (count) => {
     if (total === 0) return 0
+
     return Math.round((count / total) * 100)
   }
 
@@ -50,80 +51,96 @@ function RiskDistribution() {
       label: "Low Risk",
       count: lowRisk,
       percentage: getPercentage(lowRisk),
-      dot: "bg-emerald-500",
-      bar: "bg-emerald-500",
-      background: "bg-emerald-50",
+      color: "bg-emerald-500",
+      light: "bg-emerald-50",
+      text: "text-emerald-600",
     },
     {
       label: "Medium Risk",
       count: mediumRisk,
       percentage: getPercentage(mediumRisk),
-      dot: "bg-amber-500",
-      bar: "bg-amber-500",
-      background: "bg-amber-50",
+      color: "bg-amber-500",
+      light: "bg-amber-50",
+      text: "text-amber-600",
     },
     {
       label: "High Risk",
       count: highRisk,
       percentage: getPercentage(highRisk),
-      dot: "bg-red-500",
-      bar: "bg-red-500",
-      background: "bg-red-50",
+      color: "bg-red-500",
+      light: "bg-red-50",
+      text: "text-red-600",
     },
   ]
 
   return (
-    <div className="h-full bg-white p-5 sm:p-6">
-      <div className="flex items-start justify-between">
+    <div className="bg-white p-5 sm:p-6">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-gray-900">
+          <h2 className="text-sm font-bold text-slate-900">
             Risk Distribution
+          </h2>
+
+          <p className="mt-1 text-[11px] text-slate-400">
+            Current distribution of shipment delay risk
           </p>
-
-          <div className="mt-1 flex items-baseline gap-2">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-950">
-              {loading ? "..." : total}
-            </h2>
-
-            <span className="text-xs text-gray-400">
-              total decisions
-            </span>
-          </div>
         </div>
 
-        <div className="rounded-xl bg-gray-50 px-3 py-2">
-          <span className="text-xs font-semibold text-gray-500">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5">
+          <span className="text-[10px] font-semibold text-slate-500">
             Risk profile
           </span>
         </div>
       </div>
 
+      {/* Total */}
+      <div className="mt-5 flex items-end gap-2">
+        <p className="text-3xl font-bold tracking-tight text-slate-900">
+          {loading ? "..." : total}
+        </p>
+
+        <span className="mb-1 text-[11px] text-slate-400">
+          total decisions
+        </span>
+      </div>
+
+      {/* Risk Items */}
       <div className="mt-6 space-y-5">
         {riskItems.map((item) => (
           <div key={item.label}>
-            <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
-
-                <span className="text-xs font-semibold text-gray-700">
-                  {item.label}
+            <div className="mb-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${item.light}`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${item.color}`}
+                  />
                 </span>
+
+                <div>
+                  <p className="text-xs font-semibold text-slate-700">
+                    {item.label}
+                  </p>
+
+                  <p className="mt-0.5 text-[9px] text-slate-400">
+                    {item.count}{" "}
+                    {item.count === 1 ? "decision" : "decisions"}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-gray-900">
-                  {item.percentage}%
-                </span>
-
-                <span className="text-[10px] text-gray-400">
-                  {item.count} {item.count === 1 ? "decision" : "decisions"}
-                </span>
-              </div>
+              <span
+                className={`text-sm font-bold ${item.text}`}
+              >
+                {item.percentage}%
+              </span>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
               <div
-                className={`h-full rounded-full transition-all duration-500 ${item.bar}`}
+                className={`h-full rounded-full transition-all duration-700 ${item.color}`}
                 style={{
                   width: `${item.percentage}%`,
                 }}
@@ -133,22 +150,30 @@ function RiskDistribution() {
         ))}
       </div>
 
+      {/* Empty State */}
       {!loading && total === 0 && (
-        <div className="mt-6 rounded-xl bg-gray-50 px-4 py-3 text-center text-xs text-gray-400">
-          No saved decisions available.
+        <div className="mt-6 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center">
+          <p className="text-xs font-medium text-slate-500">
+            No risk data available
+          </p>
+
+          <p className="mt-1 text-[10px] text-slate-400">
+            Save shipment decisions to populate this section.
+          </p>
         </div>
       )}
 
-      <div className="mt-6 border-t border-gray-100 pt-4">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">
-            Risk threshold
+      {/* Footer */}
+      <div className="mt-6 border-t border-slate-100 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[10px] font-medium text-slate-400">
+            Risk thresholds
           </span>
 
-          <div className="flex items-center gap-3 text-[10px] text-gray-500">
-            <span>&lt; 30% Low</span>
+          <div className="flex items-center gap-3 text-[9px] font-medium text-slate-500">
+            <span>&lt;30% Low</span>
             <span>30–50% Medium</span>
-            <span>&gt; 50% High</span>
+            <span>&gt;50% High</span>
           </div>
         </div>
       </div>
