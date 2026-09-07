@@ -1,16 +1,109 @@
 import { useState } from "react"
 
-function Recommendations() {
-  const [form, setForm] = useState({
-    supplier: "",
-    product: "",
-    delay_probability: "",
-    order_quantity: "",
-    shipping_cost: "",
-    budget: "",
-    max_acceptable_delay: "7",
-  })
+const initialForm = {
+  supplier: "",
+  product: "",
+  delay_probability: "",
+  order_quantity: "",
+  shipping_cost: "",
+  budget: "",
+  max_acceptable_delay: "7",
+}
 
+const inputFields = [
+  {
+    name: "supplier",
+    label: "Supplier",
+    placeholder: "e.g. Supplier A",
+    type: "text",
+  },
+  {
+    name: "product",
+    label: "Product",
+    placeholder: "e.g. Microchips",
+    type: "text",
+  },
+  {
+    name: "delay_probability",
+    label: "Delay Probability",
+    placeholder: "0.65",
+    type: "number",
+    step: "0.01",
+    hint: "0 – 1",
+  },
+  {
+    name: "order_quantity",
+    label: "Order Quantity",
+    placeholder: "1200",
+    type: "number",
+    suffix: "units",
+  },
+  {
+    name: "shipping_cost",
+    label: "Shipping Cost",
+    placeholder: "10000",
+    type: "number",
+    suffix: "₹",
+  },
+  {
+    name: "budget",
+    label: "Available Budget",
+    placeholder: "15000",
+    type: "number",
+    suffix: "₹",
+  },
+  {
+    name: "max_acceptable_delay",
+    label: "Max Acceptable Delay",
+    placeholder: "7",
+    type: "number",
+    suffix: "days",
+  },
+]
+
+function InputField({ field, value, onChange }) {
+  return (
+    <div>
+      <label className="mb-2 flex items-center justify-between">
+        <span className="text-[11px] font-semibold text-slate-700">
+          {field.label}
+        </span>
+
+        {field.hint && (
+          <span className="text-[9px] font-medium text-slate-400">
+            {field.hint}
+          </span>
+        )}
+      </label>
+
+      <div className="relative">
+        <input
+          name={field.name}
+          type={field.type}
+          value={value}
+          onChange={onChange}
+          placeholder={field.placeholder}
+          step={field.step || "1"}
+          min="0"
+          max={field.name === "delay_probability" ? "1" : undefined}
+          required
+          className={`h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
+            field.suffix ? "pr-16" : ""
+          }`}
+        />
+
+        {field.suffix && (
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400">
+            {field.suffix}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Recommendations() {
+  const [form, setForm] = useState(initialForm)
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -28,6 +121,7 @@ function Recommendations() {
 
     setLoading(true)
     setError("")
+    setSavedAction("")
     setRecommendations([])
 
     try {
@@ -52,7 +146,9 @@ function Recommendations() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.detail || "Unable to generate recommendations")
+        throw new Error(
+          data.detail || "Unable to generate recommendations"
+        )
       }
 
       setRecommendations(data.recommendations || [])
@@ -65,7 +161,7 @@ function Recommendations() {
 
   const saveDecision = async (recommendation) => {
     try {
-      setSavedAction("Saving...")
+      setSavedAction("Saving decision...")
 
       const payload = {
         supplier: form.supplier,
@@ -100,122 +196,129 @@ function Recommendations() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-gray-400">
-          <span>Workspace</span>
-          <span>/</span>
-          <span className="text-gray-600">Recommendations</span>
-        </div>
-
-        <h1 className="text-3xl font-bold tracking-tight text-gray-950">
-          Decision Recommendations
-        </h1>
-
-        <p className="mt-2 text-sm text-gray-500">
-          Find the best mitigation strategy based on risk, cost and constraints.
-        </p>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-        <form
-          onSubmit={handleSubmit}
-          className="h-fit rounded-2xl border border-gray-200 bg-white shadow-sm"
-        >
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="text-base font-bold text-gray-950">
-              Optimization Inputs
-            </h2>
-
-            <p className="mt-1 text-xs text-gray-400">
-              Define your shipment and operational constraints.
-            </p>
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
+            <span>Workspace</span>
+            <span>/</span>
+            <span className="text-slate-600">Recommendations</span>
           </div>
 
-          <div className="space-y-5 p-6">
-            {[
-              ["supplier", "Supplier", "Supplier A", "text"],
-              ["product", "Product", "Microchips", "text"],
-              ["delay_probability", "Delay Probability", "0.65", "number"],
-              ["order_quantity", "Order Quantity", "1200", "number"],
-              ["shipping_cost", "Shipping Cost", "10000", "number"],
-              ["budget", "Available Budget", "15000", "number"],
-              [
-                "max_acceptable_delay",
-                "Max Acceptable Delay",
-                "7",
-                "number",
-              ],
-            ].map(([name, label, placeholder, type]) => (
-              <div key={name}>
-                <label className="mb-2 block text-xs font-semibold text-gray-700">
-                  {label}
-                </label>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Decision Recommendations
+          </h1>
 
-                <input
-                  name={name}
-                  type={type}
-                  value={form[name]}
-                  onChange={handleChange}
-                  placeholder={placeholder}
-                  step={name === "delay_probability" ? "0.01" : "1"}
-                  min={name === "delay_probability" ? "0" : undefined}
-                  max={name === "delay_probability" ? "1" : undefined}
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-900/5"
-                />
+          <p className="mt-1.5 text-sm text-slate-500">
+            Find the optimal mitigation strategy based on risk, cost and constraints.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-2">
+          <span className="text-sm text-violet-500">✦</span>
+
+          <span className="text-[10px] font-bold text-violet-600">
+            Optimization Engine
+          </span>
+        </div>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[0.78fr_1.22fr]">
+        {/* Input Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+        >
+          <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm font-bold text-violet-600">
+                01
               </div>
+
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">
+                  Optimization Inputs
+                </h2>
+
+                <p className="mt-0.5 text-[10px] text-slate-400">
+                  Define shipment and operational constraints.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-5 p-5 sm:p-6">
+            {inputFields.map((field) => (
+              <InputField
+                key={field.name}
+                field={field}
+                value={form[field.name]}
+                onChange={handleChange}
+              />
             ))}
 
             {error && (
-              <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
-                {error}
+              <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-red-500">!</span>
+
+                  <p className="text-xs font-medium text-red-600">
+                    {error}
+                  </p>
+                </div>
               </div>
             )}
+          </div>
 
+          <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-gray-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-60"
+              className="w-full rounded-lg bg-blue-600 px-5 py-3 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Optimizing..." : "Generate Recommendations"}
+              {loading
+                ? "Optimizing Options..."
+                : "Generate Recommendations →"}
             </button>
           </div>
         </form>
 
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <div className="flex items-center justify-between">
+        {/* Recommendations */}
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-base font-bold text-gray-950">
+                <h2 className="text-sm font-bold text-slate-900">
                   Recommended Actions
                 </h2>
 
-                <p className="mt-1 text-xs text-gray-400">
-                  Ranked from best to least suitable option.
+                <p className="mt-1 text-[10px] text-slate-400">
+                  Strategies ranked by cost, risk and operational feasibility.
                 </p>
               </div>
 
               {recommendations.length > 0 && (
-                <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-bold text-gray-500">
-                  {recommendations.length} options
+                <span className="rounded-md bg-blue-50 px-2.5 py-1.5 text-[9px] font-bold text-blue-600">
+                  {recommendations.length} OPTIONS
                 </span>
               )}
             </div>
           </div>
 
-          <div className="space-y-3 p-6">
+          <div className="space-y-3 p-5 sm:p-6">
             {recommendations.length === 0 ? (
-              <div className="rounded-xl bg-gray-50 px-6 py-12 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+              <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-violet-500 shadow-sm">
                   ✦
                 </div>
 
-                <p className="mt-4 text-sm font-semibold text-gray-700">
+                <p className="mt-4 text-xs font-bold text-slate-700">
                   No recommendations yet
                 </p>
 
-                <p className="mt-1 text-xs text-gray-400">
-                  Submit the optimization inputs to see recommended actions.
+                <p className="mx-auto mt-1.5 max-w-[280px] text-[10px] leading-5 text-slate-400">
+                  Submit the optimization inputs to calculate the most suitable
+                  mitigation strategies.
                 </p>
               </div>
             ) : (
@@ -225,48 +328,42 @@ function Recommendations() {
                 return (
                   <div
                     key={`${recommendation.action}-${index}`}
-                    className={`rounded-2xl border p-5 transition ${
+                    className={`rounded-xl border p-4 transition sm:p-5 ${
                       isBest
-                        ? "border-gray-900 bg-gray-950 text-white"
-                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
+                        ? "border-blue-200 bg-blue-50/60"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
                     }`}
                   >
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-start gap-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex min-w-0 items-start gap-3">
                         <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                             isBest
-                              ? "bg-white/10 text-white"
-                              : "bg-gray-100 text-gray-700"
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                              : "bg-slate-100 text-slate-600"
                           }`}
                         >
                           {index + 1}
                         </div>
 
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3
-                              className={`text-sm font-bold ${
-                                isBest ? "text-white" : "text-gray-900"
-                              }`}
-                            >
+                            <h3 className="text-sm font-bold text-slate-900">
                               {recommendation.action}
                             </h3>
 
                             {isBest && (
-                              <span className="rounded-full bg-white/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">
+                              <span className="rounded-md bg-blue-600 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-white">
                                 Best Option
                               </span>
                             )}
                           </div>
 
-                          <p
-                            className={`mt-1 text-xs ${
-                              isBest ? "text-gray-400" : "text-gray-400"
-                            }`}
-                          >
-                            Score:{" "}
-                            {Number(recommendation.score).toFixed(3)}
+                          <p className="mt-1 text-[10px] text-slate-400">
+                            Optimization score{" "}
+                            <span className="font-bold text-slate-600">
+                              {Number(recommendation.score).toFixed(3)}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -274,54 +371,55 @@ function Recommendations() {
                       <button
                         type="button"
                         onClick={() => saveDecision(recommendation)}
-                        className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition ${
-                          isBest
-                            ? "bg-white text-gray-950 hover:bg-gray-100"
-                            : "bg-gray-950 text-white hover:bg-gray-800"
-                        }`}
+                        className="shrink-0 rounded-lg bg-slate-900 px-4 py-2.5 text-[10px] font-bold text-white transition hover:bg-slate-800"
                       >
                         Save Decision
                       </button>
                     </div>
 
-                    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                      {[
-                        ["Cost", `₹${Number(recommendation.cost).toFixed(0)}`],
-                        ["Delay", `${recommendation.delay_days} days`],
-                        [
-                          "Capacity",
-                          `${Number(recommendation.capacity).toFixed(0)}`,
-                        ],
-                        [
-                          "Remaining Risk",
-                          `${Number(
-                            recommendation.remaining_delay_risk
-                          ).toFixed(1)}%`,
-                        ],
-                      ].map(([label, value]) => (
-                        <div
-                          key={label}
-                          className={`rounded-xl p-3 ${
-                            isBest ? "bg-white/5" : "bg-gray-50"
-                          }`}
-                        >
-                          <p
-                            className={`text-[9px] font-semibold uppercase tracking-wider ${
-                              isBest ? "text-gray-500" : "text-gray-400"
-                            }`}
-                          >
-                            {label}
-                          </p>
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      <div className="rounded-lg bg-white p-3">
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+                          Cost
+                        </p>
 
-                          <p
-                            className={`mt-1 text-sm font-bold ${
-                              isBest ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {value}
-                          </p>
-                        </div>
-                      ))}
+                        <p className="mt-1 text-xs font-bold text-slate-800">
+                          ₹{Number(recommendation.cost).toFixed(0)}
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg bg-white p-3">
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+                          Delay
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-800">
+                          {recommendation.delay_days} days
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg bg-white p-3">
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+                          Capacity
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-800">
+                          {Number(recommendation.capacity).toFixed(0)}
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg bg-white p-3">
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+                          Remaining Risk
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-800">
+                          {Number(
+                            recommendation.remaining_delay_risk
+                          ).toFixed(1)}
+                          %
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )
@@ -329,8 +427,14 @@ function Recommendations() {
             )}
 
             {savedAction && (
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-600">
-                {savedAction}
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+                  ✓
+                </span>
+
+                <span className="text-[10px] font-bold text-emerald-600">
+                  {savedAction}
+                </span>
               </div>
             )}
           </div>

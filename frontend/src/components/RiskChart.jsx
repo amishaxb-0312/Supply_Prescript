@@ -8,7 +8,7 @@ function RiskChart() {
     fetch("http://127.0.0.1:8000/decisions")
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to fetch decisions")
+          throw new Error("Failed to load risk data")
         }
 
         return response.json()
@@ -24,169 +24,182 @@ function RiskChart() {
       })
   }, [])
 
-  const recentDecisions = useMemo(() => {
-    return decisions.slice(-8)
+  const chartData = useMemo(() => {
+    if (!decisions.length) {
+      return []
+    }
+
+    return decisions.slice(-7).map((decision, index) => ({
+      label: `D${index + 1}`,
+      value: Math.round(Number(decision.delay_probability) * 100),
+    }))
   }, [decisions])
 
-  const averageRisk =
-    decisions.length > 0
-      ? decisions.reduce(
-          (sum, decision) =>
-            sum + Number(decision.delay_probability),
-          0
-        ) / decisions.length
-      : 0
+  const averageRisk = useMemo(() => {
+    if (!decisions.length) {
+      return 0
+    }
 
-  const averagePercentage = averageRisk * 100
+    const total = decisions.reduce(
+      (sum, decision) => sum + Number(decision.delay_probability),
+      0
+    )
 
-  const chartValues = recentDecisions.map((decision) =>
-    Number(decision.delay_probability) * 100
+    return (total / decisions.length) * 100
+  }, [decisions])
+
+  const maxValue = Math.max(
+    100,
+    ...chartData.map((item) => item.value)
   )
 
-  const getYPosition = (value) => {
-    const max = 100
-    const min = 0
-
-    const clamped = Math.max(min, Math.min(max, value))
-
-    return 100 - clamped
-  }
-
   return (
-    <div className="bg-white p-5 sm:p-6">
+    <div className="h-full bg-white">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+      <div className="flex items-start justify-between border-b border-slate-100 px-5 py-5 sm:px-6">
         <div>
-          <h2 className="text-sm font-bold text-slate-900">
-            Risk Trend
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-slate-900">
+              Delay Risk Trend
+            </h2>
 
-          <p className="mt-1 text-[11px] text-slate-400">
-            Average shipment delay risk across recent decisions
+            <span className="rounded-md bg-blue-50 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-blue-600">
+              AI
+            </span>
+          </div>
+
+          <p className="mt-1 text-[10px] text-slate-400">
+            Delay probability across recent decisions
           </p>
         </div>
 
-        <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5">
-          <span className="text-[10px] font-semibold text-blue-600">
-            Recent decisions
-          </span>
+        <div className="text-right">
+          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+            Avg. Risk
+          </p>
+
+          <p className="mt-0.5 text-lg font-bold text-slate-900">
+            {loading ? "..." : `${averageRisk.toFixed(1)}%`}
+          </p>
         </div>
       </div>
 
-      {/* Main Metric */}
-      <div className="mt-5 flex items-end gap-2">
-        <p className="text-3xl font-bold tracking-tight text-slate-900">
-          {loading ? "..." : `${averagePercentage.toFixed(1)}%`}
-        </p>
-
-        <span className="mb-1 rounded-full bg-slate-50 px-2 py-1 text-[9px] font-semibold text-slate-500">
-          Average Risk
-        </span>
-      </div>
-
       {/* Chart */}
-      <div className="mt-6">
+      <div className="p-5 sm:p-6">
         {loading ? (
-          <div className="flex h-56 items-center justify-center rounded-lg bg-slate-50">
-            <p className="text-xs text-slate-400">
-              Loading risk data...
-            </p>
-          </div>
-        ) : recentDecisions.length === 0 ? (
-          <div className="flex h-56 items-center justify-center rounded-lg bg-slate-50">
+          <div className="flex h-[250px] items-center justify-center">
             <div className="text-center">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg shadow-sm">
+              <div className="mx-auto h-8 w-8 animate-pulse rounded-lg bg-slate-100" />
+
+              <p className="mt-3 text-[10px] text-slate-400">
+                Loading risk data...
+              </p>
+            </div>
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex h-[250px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">
+            <div className="text-center">
+              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-lg text-blue-500 shadow-sm">
                 ◔
               </div>
 
-              <p className="mt-3 text-xs font-semibold text-slate-600">
-                No risk data available
+              <p className="mt-3 text-xs font-bold text-slate-700">
+                No risk data yet
               </p>
 
               <p className="mt-1 text-[10px] text-slate-400">
-                Save a decision to populate the chart.
+                Save a decision to populate the risk trend.
               </p>
             </div>
           </div>
         ) : (
-          <div className="relative h-56 overflow-hidden rounded-lg border border-slate-100 bg-slate-50/60">
-            {/* Horizontal grid */}
-            <div className="absolute inset-0 flex flex-col justify-between px-4 py-4">
-              {[100, 75, 50, 25, 0].map((value) => (
-                <div
-                  key={value}
-                  className="flex items-center gap-3"
-                >
-                  <span className="w-7 text-[9px] font-medium text-slate-400">
-                    {value}%
-                  </span>
-
-                  <div className="h-px flex-1 bg-slate-200/80" />
-                </div>
-              ))}
-            </div>
-
-            {/* Bars */}
-            <div className="absolute inset-0 flex items-end gap-3 px-12 pb-7 pt-4">
-              {recentDecisions.map((decision, index) => {
-                const percentage =
-                  Number(decision.delay_probability) * 100
-
-                const height = Math.max(
-                  8,
-                  Math.min(100, percentage)
-                )
-
-                return (
+          <div>
+            <div className="relative h-[250px]">
+              {/* Horizontal grid */}
+              <div className="absolute inset-0 flex flex-col justify-between">
+                {[100, 75, 50, 25, 0].map((value) => (
                   <div
-                    key={decision.id ?? index}
-                    className="group relative flex h-full flex-1 items-end justify-center"
+                    key={value}
+                    className="flex items-center gap-3"
                   >
-                    {/* Tooltip */}
-                    <div className="pointer-events-none absolute bottom-[calc(100%-2px)] left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[9px] font-semibold text-white opacity-0 shadow-lg transition group-hover:opacity-100">
-                      {percentage.toFixed(1)}%
-                    </div>
+                    <span className="w-7 text-right text-[8px] font-medium text-slate-400">
+                      {value}%
+                    </span>
 
-                    {/* Bar */}
-                    <div
-                      className="w-full max-w-[28px] rounded-t-md bg-blue-500 transition-all duration-300 group-hover:bg-blue-600"
-                      style={{
-                        height: `${height}%`,
-                      }}
-                    />
+                    <div className="h-px flex-1 bg-slate-100" />
                   </div>
-                )
-              })}
+                ))}
+              </div>
+
+              {/* Bars */}
+              <div className="absolute bottom-0 left-10 right-0 top-0 flex items-end justify-around gap-2 px-2 pb-5 pt-2">
+                {chartData.map((item) => {
+                  const height = Math.max(
+                    8,
+                    (item.value / maxValue) * 100
+                  )
+
+                  const isHigh = item.value > 50
+                  const isMedium =
+                    item.value >= 30 && item.value <= 50
+
+                  return (
+                    <div
+                      key={item.label}
+                      className="group flex h-full flex-1 flex-col items-center justify-end"
+                    >
+                      <div className="relative flex w-full max-w-12 flex-1 items-end justify-center">
+                        <div
+                          className={`relative w-full rounded-t-lg transition-all duration-300 ${
+                            isHigh
+                              ? "bg-red-400"
+                              : isMedium
+                                ? "bg-amber-400"
+                                : "bg-blue-500"
+                          } group-hover:opacity-80`}
+                          style={{
+                            height: `${height}%`,
+                          }}
+                        >
+                          <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[8px] font-bold text-white opacity-0 shadow-lg transition group-hover:opacity-100">
+                            {item.value}%
+                          </div>
+                        </div>
+                      </div>
+
+                      <span className="mt-2 text-[8px] font-semibold text-slate-400">
+                        {item.label}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Bottom labels */}
-            <div className="absolute bottom-2 left-12 right-4 flex justify-between">
-              {recentDecisions.map((decision, index) => (
-                <span
-                  key={decision.id ?? index}
-                  className="flex-1 text-center text-[8px] font-medium text-slate-400"
-                >
-                  #{index + 1}
+            <div className="mt-4 flex items-center justify-center gap-5 border-t border-slate-100 pt-4">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                <span className="text-[9px] font-medium text-slate-400">
+                  Low
                 </span>
-              ))}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                <span className="text-[9px] font-medium text-slate-400">
+                  Medium
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-red-400" />
+                <span className="text-[9px] font-medium text-slate-400">
+                  High
+                </span>
+              </div>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Footer */}
-      <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-blue-500" />
-
-          <span className="text-[10px] font-medium text-slate-500">
-            Delay probability
-          </span>
-        </div>
-
-        <span className="text-[10px] font-medium text-slate-400">
-          Last {recentDecisions.length} decisions
-        </span>
       </div>
     </div>
   )
