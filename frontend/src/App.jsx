@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 
 import Sidebar from "./components/Sidebar"
 import StatCard from "./components/StatCard"
@@ -11,91 +11,6 @@ import Prediction from "./pages/Prediction"
 import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
 import Performance from "./pages/Performance"
-
-function TopBar() {
-  return (
-    <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 sm:px-6 lg:px-8">
-      {/* Left */}
-      <div className="flex min-w-0 flex-1 items-center gap-4">
-        <button
-          type="button"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-        >
-          ☰
-        </button>
-
-        <div className="hidden max-w-[560px] flex-1 md:block">
-          <div className="flex h-10 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3.5 transition focus-within:border-blue-400 focus-within:bg-white">
-            <span className="text-lg text-slate-400">⌕</span>
-
-            <input
-              type="text"
-              placeholder="Search shipments, suppliers, products..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="ml-4 flex items-center gap-2 sm:gap-4">
-        <button
-          type="button"
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-        >
-          ♧
-
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[8px] font-bold text-white">
-            3
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-        >
-          ♧
-
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[8px] font-bold text-white">
-            2
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 sm:flex"
-        >
-          ⛶
-        </button>
-
-        <div className="hidden h-7 w-px bg-slate-200 sm:block" />
-
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 transition hover:bg-slate-50"
-        >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-            SM
-          </span>
-
-          <div className="hidden text-left lg:block">
-            <p className="text-xs font-semibold text-slate-800">
-              Supply Manager
-            </p>
-
-            <p className="text-[10px] text-slate-400">
-              Administrator
-            </p>
-          </div>
-
-          <span className="hidden text-xs text-slate-400 lg:block">
-            ▾
-          </span>
-        </button>
-      </div>
-    </header>
-  )
-}
 
 function Dashboard() {
   const [decisions, setDecisions] = useState([])
@@ -141,10 +56,10 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+      {/* Dashboard Header */}
+      <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
+          <div className="mb-2 flex items-center gap-2 text-[10px] font-medium text-slate-400">
             <span>Workspace</span>
             <span>/</span>
             <span className="text-slate-600">Dashboard</span>
@@ -159,21 +74,19 @@ function Dashboard() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2">
+        <div className="flex w-fit items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-
-            <span className="text-xs font-semibold text-emerald-700">
-              System Operational
-            </span>
           </div>
 
-          <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
-            <span className="text-slate-400">▣</span>
+          <div>
+            <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+              System Status
+            </p>
 
-            <span className="text-xs font-medium text-slate-600">
-              Today
-            </span>
+            <p className="mt-0.5 text-xs font-bold text-slate-700">
+              Operational
+            </p>
           </div>
         </div>
       </div>
@@ -206,19 +119,85 @@ function Dashboard() {
       </div>
 
       {/* Analytics */}
-      <div className="grid gap-5 xl:grid-cols-2">
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <RiskChart />
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <RiskDistribution />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      {/* Recent Decisions */}
+      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <ShipmentTable />
+      </div>
+    </div>
+  )
+}
+
+function PageFrame() {
+  const location = useLocation()
+
+  const isDashboard = location.pathname === "/"
+
+  return (
+    <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
+      <div className="flex min-h-screen">
+        <Sidebar />
+
+        <main className="min-w-0 flex-1">
+          {/* Top Bar */}
+          <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f6f8fb]/95 backdrop-blur">
+            <div className="flex h-16 items-center justify-between px-5 sm:px-6 lg:px-8">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                  SupplyPrescript AI
+                </p>
+
+                <p className="mt-0.5 text-[10px] font-medium text-slate-500">
+                  Intelligent supply chain management
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+
+                  <span className="text-[9px] font-semibold text-slate-500">
+                    API Connected
+                  </span>
+                </div>
+
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm">
+                  SM
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
+            {!isDashboard && (
+              <div className="mb-1 h-0.5 w-10 rounded-full bg-blue-600" />
+            )}
+
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/predictions" element={<Prediction />} />
+              <Route
+                path="/recommendations"
+                element={<Recommendations />}
+              />
+              <Route
+                path="/decision-history"
+                element={<DecisionHistory />}
+              />
+              <Route path="/performance" element={<Performance />} />
+            </Routes>
+          </div>
+        </main>
       </div>
     </div>
   )
@@ -227,53 +206,7 @@ function Dashboard() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen bg-[#f5f7fb] text-slate-900">
-        <Sidebar />
-
-        <div className="min-w-0 flex-1">
-          <TopBar />
-
-          <main>
-            <div className="mx-auto w-full max-w-[1700px] p-5 sm:p-6 lg:p-7">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-
-                <Route
-                  path="/predictions"
-                  element={<Prediction />}
-                />
-
-                <Route
-                  path="/recommendations"
-                  element={<Recommendations />}
-                />
-
-                <Route
-                  path="/decision-history"
-                  element={<DecisionHistory />}
-                />
-
-                <Route
-                  path="/performance"
-                  element={<Performance />}
-                />
-              </Routes>
-            </div>
-          </main>
-
-          <footer className="px-5 pb-5 sm:px-6 lg:px-7">
-            <div className="flex flex-col justify-between gap-2 border-t border-slate-200 pt-4 text-[10px] text-slate-400 sm:flex-row">
-              <span>
-                © 2026 SupplyPrescript. All rights reserved.
-              </span>
-
-              <span>
-                Smarter Decisions. Stronger Supply Chains.
-              </span>
-            </div>
-          </footer>
-        </div>
-      </div>
+      <PageFrame />
     </BrowserRouter>
   )
 }
