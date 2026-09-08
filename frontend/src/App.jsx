@@ -11,6 +11,7 @@ import Prediction from "./pages/Prediction"
 import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
 import Performance from "./pages/Performance"
+import Settings from "./pages/Settings"
 
 function Dashboard() {
   const [decisions, setDecisions] = useState([])
@@ -247,6 +248,11 @@ function PageFrame() {
               <Route
                 path="/performance"
                 element={<Performance />}
+              />
+
+              <Route
+                path="/settings"
+                element={<Settings />}
               />
             </Routes>
           </div>
