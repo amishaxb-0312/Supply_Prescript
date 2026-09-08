@@ -140,7 +140,23 @@ function Dashboard() {
 function PageFrame() {
   const location = useLocation()
 
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("supplyprescript-theme") === "dark"
+  })
+
   const isDashboard = location.pathname === "/"
+
+  useEffect(() => {
+    const root = document.documentElement
+
+    if (darkMode) {
+      root.classList.add("dark")
+      localStorage.setItem("supplyprescript-theme", "dark")
+    } else {
+      root.classList.remove("dark")
+      localStorage.setItem("supplyprescript-theme", "light")
+    }
+  }, [darkMode])
 
   return (
     <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
@@ -162,6 +178,32 @@ function PageFrame() {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Theme Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setDarkMode((previous) => !previous)}
+                  aria-label={
+                    darkMode
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                  title={
+                    darkMode
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                  className="group flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-[9px] font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                >
+                  <span className="text-sm">
+                    {darkMode ? "☀" : "☾"}
+                  </span>
+
+                  <span className="hidden sm:inline">
+                    {darkMode ? "Light" : "Dark"}
+                  </span>
+                </button>
+
+                {/* API Status */}
                 <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
 
@@ -170,6 +212,7 @@ function PageFrame() {
                   </span>
                 </div>
 
+                {/* User */}
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm">
                   SM
                 </div>
@@ -185,16 +228,26 @@ function PageFrame() {
 
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/predictions" element={<Prediction />} />
+
+              <Route
+                path="/predictions"
+                element={<Prediction />}
+              />
+
               <Route
                 path="/recommendations"
                 element={<Recommendations />}
               />
+
               <Route
                 path="/decision-history"
                 element={<DecisionHistory />}
               />
-              <Route path="/performance" element={<Performance />} />
+
+              <Route
+                path="/performance"
+                element={<Performance />}
+              />
             </Routes>
           </div>
         </main>

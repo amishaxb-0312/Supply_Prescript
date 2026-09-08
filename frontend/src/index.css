@@ -1,11 +1,283 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html {
+  background: #f6f8fb;
 }
 
 body {
-  font-family: Inter, system-ui, sans-serif;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f6f8fb;
+  color: #0f172a;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+html.dark {
+  background: #0b1120;
+}
+
+html.dark body {
+  background: #0b1120;
+  color: #e2e8f0;
+}
+
+/* Main backgrounds */
+html.dark .bg-\[\#f6f8fb\] {
+  background-color: #0b1120 !important;
+}
+
+html.dark .bg-white {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #172033 !important;
+}
+
+html.dark .bg-slate-50\/70 {
+  background-color: rgba(23, 32, 51, 0.7) !important;
+}
+
+html.dark .bg-slate-50\/40 {
+  background-color: rgba(23, 32, 51, 0.4) !important;
+}
+
+/* Text */
+html.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-slate-800 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.dark .text-slate-300 {
+  color: #475569 !important;
+}
+
+/* Borders */
+html.dark .border-slate-200 {
+  border-color: #263244 !important;
+}
+
+html.dark .border-slate-100 {
+  border-color: #1e293b !important;
+}
+
+html.dark .border-slate-200\/80 {
+  border-color: rgba(38, 50, 68, 0.8) !important;
+}
+
+/* Header */
+html.dark header {
+  background-color: rgba(11, 17, 32, 0.95) !important;
+}
+
+/* Inputs */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #172033 !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.dark input:hover,
+html.dark select:hover,
+html.dark textarea:hover {
+  border-color: #475569 !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  background-color: #111827 !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Input suffix badges */
+html.dark .pointer-events-none.bg-white {
+  background-color: #1e293b !important;
+}
+
+/* Tables */
+html.dark table {
+  color: #e2e8f0;
+}
+
+html.dark thead {
+  background-color: #172033 !important;
+}
+
+html.dark tr:hover {
+  background-color: rgba(30, 41, 59, 0.55) !important;
+}
+
+/* Dashed empty states */
+html.dark .border-dashed {
+  border-color: #334155 !important;
+}
+
+/* Common shadow adjustment */
+html.dark .shadow-sm,
+html.dark .shadow-md {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Blue backgrounds */
+html.dark .bg-blue-50 {
+  background-color: rgba(30, 64, 175, 0.18) !important;
+}
+
+html.dark .bg-blue-50\/60 {
+  background-color: rgba(30, 64, 175, 0.18) !important;
+}
+
+/* Violet backgrounds */
+html.dark .bg-violet-50 {
+  background-color: rgba(109, 40, 217, 0.18) !important;
+}
+
+/* Green backgrounds */
+html.dark .bg-emerald-50 {
+  background-color: rgba(6, 95, 70, 0.2) !important;
+}
+
+/* Amber backgrounds */
+html.dark .bg-amber-50 {
+  background-color: rgba(120, 53, 15, 0.2) !important;
+}
+
+/* Red backgrounds */
+html.dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.2) !important;
+}
+
+/* Colored text */
+html.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+html.dark .text-blue-700 {
+  color: #93c5fd !important;
+}
+
+html.dark .text-violet-600 {
+  color: #a78bfa !important;
+}
+
+html.dark .text-emerald-600 {
+  color: #34d399 !important;
+}
+
+html.dark .text-amber-600 {
+  color: #fbbf24 !important;
+}
+
+html.dark .text-red-600 {
+  color: #f87171 !important;
+}
+
+/* Colored borders */
+html.dark .border-blue-100 {
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+html.dark .border-violet-100 {
+  border-color: rgba(139, 92, 246, 0.25) !important;
+}
+
+html.dark .border-emerald-100 {
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+html.dark .border-red-100 {
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+html.dark .border-amber-100 {
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+/* Buttons / dark surfaces */
+html.dark .bg-slate-900 {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.dark .hover\:bg-slate-800:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* Navy analytics cards should remain dark */
+html.dark .bg-\[\#111c2e\] {
+  background-color: #080e1b !important;
+}
+
+/* Scrollbars */
+html.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0b1120;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Smooth theme transition */
+* {
+  transition-property:
+    background-color,
+    border-color,
+    color,
+    box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
