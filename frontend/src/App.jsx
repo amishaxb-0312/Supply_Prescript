@@ -7,6 +7,7 @@ import RiskChart from "./components/RiskChart"
 import RiskDistribution from "./components/RiskDistribution"
 import ShipmentTable from "./components/ShipmentTable"
 
+import Home from "./pages/Home"
 import Prediction from "./pages/Prediction"
 import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
@@ -145,7 +146,7 @@ function PageFrame() {
     return localStorage.getItem("supplyprescript-theme") === "dark"
   })
 
-  const isDashboard = location.pathname === "/"
+  const isHome = location.pathname === "/"
 
   useEffect(() => {
     const root = document.documentElement
@@ -161,103 +162,105 @@ function PageFrame() {
 
   return (
     <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
-      <div className="flex min-h-screen">
-        <Sidebar />
+      {isHome ? (
+        <Home />
+      ) : (
+        <div className="flex min-h-screen">
+          <Sidebar />
 
-        <main className="min-w-0 flex-1">
-          {/* Top Bar */}
-          <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f6f8fb]/95 backdrop-blur">
-            <div className="flex h-16 items-center justify-between px-5 sm:px-6 lg:px-8">
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                  SupplyPrescript AI
-                </p>
+          <main className="min-w-0 flex-1">
+            {/* Top Bar */}
+            <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f6f8fb]/95 backdrop-blur">
+              <div className="flex h-16 items-center justify-between px-5 sm:px-6 lg:px-8">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                    SupplyPrescript AI
+                  </p>
 
-                <p className="mt-0.5 text-[10px] font-medium text-slate-500">
-                  Intelligent supply chain management
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {/* Theme Toggle */}
-                <button
-                  type="button"
-                  onClick={() => setDarkMode((previous) => !previous)}
-                  aria-label={
-                    darkMode
-                      ? "Switch to light mode"
-                      : "Switch to dark mode"
-                  }
-                  title={
-                    darkMode
-                      ? "Switch to light mode"
-                      : "Switch to dark mode"
-                  }
-                  className="group flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-[9px] font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-                >
-                  <span className="text-sm">
-                    {darkMode ? "☀" : "☾"}
-                  </span>
-
-                  <span className="hidden sm:inline">
-                    {darkMode ? "Light" : "Dark"}
-                  </span>
-                </button>
-
-                {/* API Status */}
-                <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-
-                  <span className="text-[9px] font-semibold text-slate-500">
-                    API Connected
-                  </span>
+                  <p className="mt-0.5 text-[10px] font-medium text-slate-500">
+                    Intelligent supply chain management
+                  </p>
                 </div>
 
-                {/* User */}
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm">
-                  SM
+                <div className="flex items-center gap-2">
+                  {/* Theme Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setDarkMode((previous) => !previous)}
+                    aria-label={
+                      darkMode
+                        ? "Switch to light mode"
+                        : "Switch to dark mode"
+                    }
+                    title={
+                      darkMode
+                        ? "Switch to light mode"
+                        : "Switch to dark mode"
+                    }
+                    className="group flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-[9px] font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                  >
+                    <span className="text-sm">
+                      {darkMode ? "☀" : "☾"}
+                    </span>
+
+                    <span className="hidden sm:inline">
+                      {darkMode ? "Light" : "Dark"}
+                    </span>
+                  </button>
+
+                  {/* API Status */}
+                  <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+
+                    <span className="text-[9px] font-semibold text-slate-500">
+                      API Connected
+                    </span>
+                  </div>
+
+                  {/* User */}
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm">
+                    SM
+                  </div>
                 </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          {/* Page Content */}
-          <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
-            {!isDashboard && (
+            {/* Page Content */}
+            <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
               <div className="mb-1 h-0.5 w-10 rounded-full bg-blue-600" />
-            )}
 
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
 
-              <Route
-                path="/predictions"
-                element={<Prediction />}
-              />
+                <Route
+                  path="/predictions"
+                  element={<Prediction />}
+                />
 
-              <Route
-                path="/recommendations"
-                element={<Recommendations />}
-              />
+                <Route
+                  path="/recommendations"
+                  element={<Recommendations />}
+                />
 
-              <Route
-                path="/decision-history"
-                element={<DecisionHistory />}
-              />
+                <Route
+                  path="/decision-history"
+                  element={<DecisionHistory />}
+                />
 
-              <Route
-                path="/performance"
-                element={<Performance />}
-              />
+                <Route
+                  path="/performance"
+                  element={<Performance />}
+                />
 
-              <Route
-                path="/settings"
-                element={<Settings />}
-              />
-            </Routes>
-          </div>
-        </main>
-      </div>
+                <Route
+                  path="/settings"
+                  element={<Settings />}
+                />
+              </Routes>
+            </div>
+          </main>
+        </div>
+      )}
     </div>
   )
 }
