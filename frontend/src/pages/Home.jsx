@@ -3,35 +3,40 @@ import { Link } from "react-router-dom"
 const features = [
   {
     icon: "◉",
-    iconClass: "bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+    iconClass:
+      "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
     title: "AI-Powered Prediction",
     description:
       "Uses XGBoost to predict shipment delays and estimate delivery risk.",
   },
   {
     icon: "✓",
-    iconClass: "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+    iconClass:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
     title: "Risk Assessment",
     description:
       "Analyzes suppliers, routes and shipment conditions to identify risk.",
   },
   {
     icon: "⚙",
-    iconClass: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+    iconClass:
+      "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
     title: "Optimization Engine",
     description:
       "Recommends the best mitigation strategy based on cost and constraints.",
   },
   {
     icon: "▣",
-    iconClass: "bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
+    iconClass:
+      "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
     title: "Track & Learn",
     description:
       "Stores decisions and actual outcomes to measure performance over time.",
   },
   {
     icon: "▥",
-    iconClass: "bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+    iconClass:
+      "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
     title: "Performance Insights",
     description:
       "Compare predicted and actual results to understand decision quality.",
@@ -45,7 +50,7 @@ const workflow = [
     title: "Input Data",
     description: "Add shipment details, constraints and preferences.",
     className:
-      "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+      "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
   },
   {
     number: "2",
@@ -53,7 +58,7 @@ const workflow = [
     title: "Predict & Analyze",
     description: "AI model detects risks and estimates delay probability.",
     className:
-      "bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+      "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
   },
   {
     number: "3",
@@ -61,7 +66,7 @@ const workflow = [
     title: "Get Recommendations",
     description: "Optimization engine suggests the best actions.",
     className:
-      "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
   },
   {
     number: "4",
@@ -69,7 +74,7 @@ const workflow = [
     title: "Track & Improve",
     description: "Record outcomes and measure decision performance.",
     className:
-      "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+      "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
   },
 ]
 
@@ -79,7 +84,7 @@ function SupplyChainVisual() {
       {/* Background glow */}
       <div className="absolute inset-x-8 top-12 h-[320px] rounded-full bg-blue-100/60 blur-3xl dark:bg-blue-900/20" />
 
-      {/* World/map-style background */}
+      {/* Supply chain map */}
       <div className="absolute left-2 top-14 h-[280px] w-[92%] rounded-[48%] bg-gradient-to-br from-blue-50 via-sky-100/80 to-blue-50 dark:from-blue-950/40 dark:via-slate-800 dark:to-blue-950/30 sm:left-8 sm:h-[320px] sm:w-[520px]">
         <div className="absolute inset-8 opacity-50">
           <div className="absolute left-[15%] top-[32%] h-px w-[55%] rotate-[12deg] border-t-2 border-dashed border-blue-300 dark:border-blue-700" />
@@ -144,15 +149,15 @@ function SupplyChainVisual() {
       <div className="absolute right-0 top-[92px] z-20 w-[250px] rounded-2xl border border-white/80 bg-white p-4 shadow-2xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:right-[20px] sm:top-[105px] sm:w-[280px] sm:p-5">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Shipment Delay Prediction
             </p>
 
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">
               23%
             </p>
 
-            <p className="mt-0.5 text-[9px] text-slate-400">
+            <p className="mt-0.5 text-[9px] text-slate-500 dark:text-slate-400">
               Estimated delay risk
             </p>
           </div>
@@ -160,7 +165,7 @@ function SupplyChainVisual() {
           <div className="relative flex h-14 w-14 items-center justify-center rounded-full border-[7px] border-slate-100 dark:border-slate-800 sm:h-16 sm:w-16">
             <div className="absolute inset-[-7px] rounded-full border-[7px] border-transparent border-t-red-400 border-r-red-400 rotate-[-30deg]" />
 
-            <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300">
+            <span className="text-[8px] font-bold text-slate-700 dark:text-slate-200">
               LOW
             </span>
           </div>
@@ -170,11 +175,11 @@ function SupplyChainVisual() {
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
 
-            <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-[9px] font-medium text-slate-600 dark:text-slate-400">
               On Time
             </span>
 
-            <span className="ml-auto text-[9px] font-bold text-slate-700 dark:text-slate-200">
+            <span className="ml-auto text-[9px] font-bold text-slate-800 dark:text-slate-200">
               77%
             </span>
           </div>
@@ -182,20 +187,20 @@ function SupplyChainVisual() {
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-red-400" />
 
-            <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
+            <span className="text-[9px] font-medium text-slate-600 dark:text-slate-400">
               Delayed
             </span>
 
-            <span className="ml-auto text-[9px] font-bold text-slate-700 dark:text-slate-200">
+            <span className="ml-auto text-[9px] font-bold text-slate-800 dark:text-slate-200">
               23%
             </span>
           </div>
         </div>
       </div>
 
-      {/* Risk Trend Card */}
+      {/* Risk Trend */}
       <div className="absolute right-0 top-[265px] z-20 w-[135px] rounded-2xl border border-white/80 bg-white p-3 shadow-xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:right-[-5px] sm:top-[285px] sm:w-[155px] sm:p-4">
-        <p className="text-[9px] font-bold text-blue-600 dark:text-blue-400">
+        <p className="text-[9px] font-bold text-blue-700 dark:text-blue-300">
           Risk Trend
         </p>
 
@@ -210,19 +215,19 @@ function SupplyChainVisual() {
         </div>
       </div>
 
-      {/* Recommendation Card */}
+      {/* Recommendation */}
       <div className="absolute bottom-0 right-[20px] z-30 w-[250px] rounded-2xl border border-white/80 bg-white p-4 shadow-2xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:right-[72px] sm:w-[290px]">
         <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-lg text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-lg text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
             ✦
           </div>
 
           <div>
-            <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
+            <p className="text-[10px] font-bold text-blue-700 dark:text-blue-300">
               AI Recommendation
             </p>
 
-            <p className="mt-1 text-[10px] leading-5 text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-[10px] leading-5 text-slate-600 dark:text-slate-400">
               Consider an alternative route or supplier to reduce shipment
               delay risk.
             </p>
@@ -236,16 +241,16 @@ function SupplyChainVisual() {
 
       {/* Optimized Badge */}
       <div className="absolute bottom-[8px] left-0 z-30 hidden items-center gap-2 rounded-xl border border-white bg-white px-3 py-2.5 shadow-xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:flex sm:px-4 sm:py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
           ✓
         </div>
 
         <div>
-          <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+          <p className="text-[8px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Status
           </p>
 
-          <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
             Optimized Decision
           </p>
         </div>
@@ -258,7 +263,7 @@ function Home() {
   return (
     <div className="min-h-screen overflow-hidden bg-white text-slate-900 dark:bg-[#0b1120] dark:text-slate-100">
       {/* Header */}
-      <header className="border-b border-slate-100 bg-white dark:border-slate-800 dark:bg-[#0b1120]">
+      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1120]">
         <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111c2e] text-sm font-bold text-white shadow-md sm:h-11 sm:w-11 sm:text-base">
@@ -266,11 +271,11 @@ function Home() {
             </div>
 
             <div>
-              <p className="text-[16px] font-bold tracking-tight text-slate-900 dark:text-white sm:text-[17px]">
+              <p className="text-[16px] font-bold tracking-tight text-slate-950 dark:text-white sm:text-[17px]">
                 SupplyPrescript
               </p>
 
-              <p className="text-[10px] font-medium text-slate-400">
+              <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
                 AI Supply Chain
               </p>
             </div>
@@ -279,7 +284,7 @@ function Home() {
           <nav className="hidden items-center gap-8 sm:flex">
             <a
               href="#home"
-              className="relative py-2 text-xs font-semibold text-blue-600"
+              className="relative py-2 text-xs font-bold text-blue-700 dark:text-blue-300"
             >
               Home
 
@@ -288,7 +293,7 @@ function Home() {
 
             <Link
               to="/dashboard"
-              className="py-2 text-xs font-semibold text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              className="py-2 text-xs font-bold text-slate-700 transition hover:text-blue-700 dark:text-slate-300 dark:hover:text-blue-300"
             >
               Dashboard
             </Link>
@@ -299,31 +304,31 @@ function Home() {
       {/* Hero */}
       <section
         id="home"
-        className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/60 to-sky-50 dark:from-[#0b1120] dark:via-[#101a2e] dark:to-[#0d1b2e]"
+        className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/70 to-sky-50 dark:from-[#0b1120] dark:via-[#101a2e] dark:to-[#0d1b2e]"
       >
-        <div className="absolute left-[-120px] top-[-100px] h-[300px] w-[300px] rounded-full bg-blue-100/40 blur-3xl dark:bg-blue-900/20" />
+        <div className="absolute left-[-120px] top-[-100px] h-[300px] w-[300px] rounded-full bg-blue-100/50 blur-3xl dark:bg-blue-900/20" />
 
         <div className="absolute right-[-100px] top-[100px] h-[400px] w-[400px] rounded-full bg-sky-100/50 blur-3xl dark:bg-sky-900/15" />
 
         <div className="relative mx-auto grid max-w-[1400px] items-center gap-2 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-[0.9fr_1.1fr] lg:px-12 lg:py-12">
           {/* Hero Content */}
           <div className="relative z-10 max-w-[610px]">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-100/70 px-4 py-2 dark:border-blue-500/20 dark:bg-blue-500/10">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-100/80 px-4 py-2 dark:border-blue-500/25 dark:bg-blue-500/10">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
 
-              <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-600 dark:text-blue-400">
+              <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
                 AI-Powered Supply Chain Intelligence
               </span>
             </div>
 
             <h1 className="text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-[#101d38] dark:text-white sm:text-5xl lg:text-[58px]">
               Smarter Decisions for a{" "}
-              <span className="text-blue-600 dark:text-blue-400">
+              <span className="text-blue-700 dark:text-blue-400">
                 Stronger Supply Chain
               </span>
             </h1>
 
-            <p className="mt-6 max-w-[530px] text-sm leading-7 text-slate-500 dark:text-slate-400 sm:text-[15px]">
+            <p className="mt-6 max-w-[530px] text-sm font-medium leading-7 text-slate-600 dark:text-slate-300 sm:text-[15px]">
               SupplyPrescript uses machine learning and optimization
               techniques to predict shipment delays, assess risks and
               recommend the best decisions for your supply chain.
@@ -340,9 +345,9 @@ function Home() {
 
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 px-3 py-3 text-xs font-bold text-blue-600 transition hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="inline-flex items-center gap-2 px-3 py-3 text-xs font-bold text-blue-700 transition hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
               >
-                <span className="flex h-5 w-5 items-center justify-center rounded-full border border-blue-200 text-[9px] dark:border-blue-500/30">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full border border-blue-300 text-[9px] dark:border-blue-500/40">
                   i
                 </span>
 
@@ -352,35 +357,35 @@ function Home() {
 
             <div className="mt-8 flex flex-wrap gap-5">
               <div>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">
+                <p className="text-lg font-bold text-slate-950 dark:text-white">
                   XGBoost
                 </p>
 
-                <p className="text-[9px] text-slate-400">
+                <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
                   Prediction Model
                 </p>
               </div>
 
-              <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
+              <div className="h-8 w-px bg-slate-300 dark:bg-slate-700" />
 
               <div>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">
+                <p className="text-lg font-bold text-slate-950 dark:text-white">
                   AI + Optimization
                 </p>
 
-                <p className="text-[9px] text-slate-400">
+                <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
                   Decision Intelligence
                 </p>
               </div>
 
-              <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
+              <div className="h-8 w-px bg-slate-300 dark:bg-slate-700" />
 
               <div>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">
+                <p className="text-lg font-bold text-slate-950 dark:text-white">
                   Real-time
                 </p>
 
-                <p className="text-[9px] text-slate-400">
+                <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
                   Decision Tracking
                 </p>
               </div>
@@ -401,7 +406,7 @@ function Home() {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-100 hover:shadow-lg hover:shadow-slate-900/5 dark:border-slate-800 dark:bg-[#111827] dark:hover:border-slate-700 dark:hover:shadow-black/20"
+                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-slate-900/5 dark:border-slate-800 dark:bg-[#111827] dark:hover:border-slate-700 dark:hover:shadow-black/20"
               >
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold ${feature.iconClass}`}
@@ -409,11 +414,11 @@ function Home() {
                   {feature.icon}
                 </div>
 
-                <h3 className="mt-4 text-sm font-bold text-[#132342] dark:text-slate-100">
+                <h3 className="mt-4 text-sm font-bold text-slate-950 dark:text-white">
                   {feature.title}
                 </h3>
 
-                <p className="mt-2 text-[10px] leading-5 text-slate-500 dark:text-slate-400">
+                <p className="mt-2 text-[10px] font-medium leading-5 text-slate-600 dark:text-slate-400">
                   {feature.description}
                 </p>
               </div>
@@ -425,12 +430,12 @@ function Home() {
       {/* How It Works */}
       <section
         id="how-it-works"
-        className="border-t border-slate-100 bg-gradient-to-br from-blue-50/70 via-white to-sky-50/60 px-5 py-14 dark:border-slate-800 dark:from-[#101a2e] dark:via-[#0b1120] dark:to-[#0d1b2e] sm:px-8 lg:px-12"
+        className="border-t border-slate-200 bg-gradient-to-br from-blue-50/80 via-white to-sky-50/70 px-5 py-14 dark:border-slate-800 dark:from-[#101a2e] dark:via-[#0b1120] dark:to-[#0d1b2e] sm:px-8 lg:px-12"
       >
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
             <div className="max-w-[430px]">
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
                 How It Works
               </p>
 
@@ -438,7 +443,7 @@ function Home() {
                 From Prediction to Better Decisions
               </h2>
 
-              <p className="mt-4 text-sm leading-6 text-slate-500 dark:text-slate-400">
+              <p className="mt-4 text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">
                 SupplyPrescript analyzes your supply chain data, predicts
                 risks, recommends optimized solutions and helps you track the
                 results — all in one place.
@@ -468,11 +473,11 @@ function Home() {
                       {step.icon}
                     </div>
 
-                    <p className="mt-4 text-xs font-bold text-[#12203c] dark:text-slate-100">
+                    <p className="mt-4 text-xs font-bold text-slate-950 dark:text-white">
                       {step.number}. {step.title}
                     </p>
 
-                    <p className="mx-auto mt-2 max-w-[150px] text-[9px] leading-5 text-slate-500 dark:text-slate-400">
+                    <p className="mx-auto mt-2 max-w-[150px] text-[9px] font-medium leading-5 text-slate-600 dark:text-slate-400">
                       {step.description}
                     </p>
                   </div>
@@ -482,31 +487,31 @@ function Home() {
           </div>
 
           <div className="mt-12 flex items-center justify-center gap-5">
-            <span className="hidden h-px w-14 bg-blue-200 dark:bg-blue-900 sm:block" />
+            <span className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block" />
 
-            <span className="text-[9px] font-bold tracking-[0.35em] text-blue-400">
+            <span className="text-[9px] font-bold tracking-[0.35em] text-blue-600 dark:text-blue-400">
               PREDICT · OPTIMIZE · STRENGTHEN
             </span>
 
-            <span className="hidden h-px w-14 bg-blue-200 dark:bg-blue-900 sm:block" />
+            <span className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block" />
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-100 bg-white px-5 py-6 dark:border-slate-800 dark:bg-[#0b1120] sm:px-8 lg:px-12">
+      <footer className="border-t border-slate-200 bg-white px-5 py-6 dark:border-slate-800 dark:bg-[#0b1120] sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#111c2e] text-[8px] font-bold text-white">
               SP
             </div>
 
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">
               SupplyPrescript AI
             </span>
           </div>
 
-          <p className="text-[9px] text-slate-400">
+          <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
             Intelligent supply chain management
           </p>
         </div>

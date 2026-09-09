@@ -281,3 +281,56 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   transition-duration: 150ms;
   transition-timing-function: ease;
 }
+/* =========================================================
+   LANDING PAGE THEME
+   ========================================================= */
+
+html.dark #home,
+html.dark #how-it-works {
+  color-scheme: dark;
+}
+
+/* Smooth landing-page theme transition */
+html.dark #home,
+html.dark #how-it-works,
+html.dark #home *,
+html.dark #how-it-works * {
+  transition-property:
+    background-color,
+    border-color,
+    color,
+    box-shadow,
+    opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Keep landing-page cards readable in dark mode */
+html.dark #home .bg-white,
+html.dark #how-it-works .bg-white {
+  background-color: #111827 !important;
+}
+
+/* Landing-page borders */
+html.dark #home .border-slate-100,
+html.dark #how-it-works .border-slate-100 {
+  border-color: #1e293b !important;
+}
+
+/* Landing-page headings */
+html.dark #home .text-slate-900,
+html.dark #how-it-works .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+/* Landing-page muted text */
+html.dark #home .text-slate-500,
+html.dark #how-it-works .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+/* Landing-page secondary text */
+html.dark #home .text-slate-400,
+html.dark #how-it-works .text-slate-400 {
+  color: #64748b !important;
+}
