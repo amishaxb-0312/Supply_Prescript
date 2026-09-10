@@ -1,119 +1,95 @@
-# SupplyPrescript AI
+# SupplyPrescript AI 🚚📊
 
-AI-powered supply chain risk prediction and decision optimization system.
+An AI-powered supply chain decision intelligence system that predicts shipment delays, assesses risk, and recommends optimized mitigation strategies.
 
-## Overview
+SupplyPrescript combines Machine Learning, Optimization, FastAPI, React, and SQL to help supply chain managers make data-driven decisions before shipment delays become costly problems.
 
-SupplyPrescript AI helps supply chain managers identify shipment delay risks and choose suitable mitigation strategies.
+---
 
-The system combines machine learning with optimization logic to:
+## 🚀 Overview
 
-- Predict shipment delay probability
-- Classify shipment risk levels
-- Recommend mitigation actions
-- Compare cost, delay, capacity, and risk
-- Save supply chain decisions
-- Track actual outcomes
-- Evaluate decision performance
+Supply chain delays can lead to increased transportation costs, inventory shortages, customer dissatisfaction, and operational losses.
 
-## Features
+SupplyPrescript addresses this problem through a complete decision-support pipeline:
 
-### 1. Shipment Delay Prediction
+**Shipment Data → Delay Prediction → Risk Assessment → Action Optimization → Decision Tracking → Performance Analysis**
 
-The system uses an XGBoost machine learning model to predict the probability of shipment delay based on factors such as:
+The system uses an XGBoost machine learning model to estimate shipment delay probability and an optimization engine to recommend the most suitable mitigation action based on cost, delay, capacity, and risk constraints.
 
-- Supplier reliability
-- Historical delay rate
-- Lead time
-- Inventory level
-- Supplier capacity
-- Shipping cost
-- Weather risk
-- Demand forecast
-- Order quantity
-- Shipment distance
+---
 
-### 2. Decision Recommendations
+## ✨ Key Features
 
-The optimization module evaluates different mitigation strategies:
+### 🤖 AI-Powered Delay Prediction
+- Predicts the probability of shipment delay.
+- Uses an XGBoost classification model.
+- Considers shipment, supplier, inventory, demand, weather, and transportation-related factors.
 
-- Air Freight
-- Secondary Supplier
-- Delay Product Launch
+### ⚠️ Risk Assessment
+- Converts prediction results into actionable risk levels.
+- Displays estimated delay probability.
+- Helps identify potentially problematic shipments.
+
+### 🧠 Decision Optimization
+Evaluates possible mitigation strategies such as:
+
+- ✈️ Air Freight
+- 🏭 Secondary Supplier
+- 📅 Delay Product Launch
 
 Recommendations consider:
 
-- Available budget
-- Expected delay
-- Supplier/product capacity
-- Delay risk reduction
 - Action cost
-
-### 3. Decision History
-
-Users can save recommended decisions and review previous supply chain decisions.
-
-### 4. Performance Tracking
-
-Actual delay and cost can be recorded after a decision is implemented.
-
-The system compares:
-
-- Predicted delay risk
 - Expected delay
-- Actual delay
-- Expected action cost
-- Actual cost
+- Remaining delay risk
+- Budget constraints
+- Capacity constraints
+- Maximum acceptable delay
 
-## Tech Stack
+### 💾 Decision Tracking
+- Saves selected decisions to a database.
+- Maintains decision history.
+- Records actual outcomes after shipment completion.
 
-### Frontend
+### 📈 Performance Analysis
+Compares:
 
-- React
-- Vite
-- Tailwind CSS
-- React Router
+- Predicted vs actual delay
+- Expected vs actual cost
+- Cost difference
+- Delay difference
+- Overall decision outcome
 
-### Backend
+This allows the system to evaluate how effective its recommendations were.
 
-- Python
-- FastAPI
-- SQLAlchemy
-- SQLite
+---
 
-### Machine Learning
-
-- XGBoost
-- Scikit-learn
-- Pandas
-- NumPy
-- Joblib
-
-### Optimization
-
-- SciPy
-
-## Project Structure
+## 🏗️ System Architecture
 
 ```text
-SupplyPrescript/
-│
-├── backend/
-│   ├── main.py
-│   └── ...
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   └── pages/
-│   └── package.json
-│
-├── ml/
-│   ├── xgboost_delay_model.pkl
-│   └── preprocessor.pkl
-│
-├── data/
-├── notebooks/
-├── requirements.txt
-├── .gitignore
-└── README.md
+                    ┌─────────────────────┐
+                    │     React Frontend  │
+                    │   Dashboard & UI    │
+                    └──────────┬──────────┘
+                               │
+                               │ REST API
+                               ▼
+                    ┌─────────────────────┐
+                    │     FastAPI         │
+                    │      Backend        │
+                    └──────────┬──────────┘
+                               │
+                  ┌────────────┴────────────┐
+                  │                         │
+                  ▼                         ▼
+        ┌──────────────────┐      ┌──────────────────┐
+        │ XGBoost Model    │      │ Optimization     │
+        │ Delay Prediction  │      │ Engine           │
+        └──────────────────┘      └──────────────────┘
+                  │                         │
+                  └────────────┬────────────┘
+                               ▼
+                    ┌─────────────────────┐
+                    │    SQLite Database  │
+                    │  Decision History   │
+                    └─────────────────────┘
