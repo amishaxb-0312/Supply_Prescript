@@ -1,32 +1,76 @@
-# Python virtual environment
-myenv/
-venv/
-.venv/
+# =========================
+# Python
+# =========================
 
-# Python cache
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 
-# Environment variables
-.env
-.env.*
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
 
+# Python environment files
+.python-version
+
+# =========================
 # Jupyter
+# =========================
+
 .ipynb_checkpoints/
 
+# =========================
+# Environment / Secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
 # Database
-supplyprescript.db
+# =========================
 
-# Node.js
-node_modules/
+*.db
+*.sqlite
+*.sqlite3
 
-# Frontend build
-dist/
-
+# =========================
 # Logs
+# =========================
+
 *.log
 
-# OS files
+# =========================
+# Node
+# =========================
+
+node_modules/
+frontend/node_modules/
+
+# Vite
+frontend/dist/
+
+# =========================
+# OS
+# =========================
+
 .DS_Store
 Thumbs.db
+
+# =========================
+# IDE
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.temp
+*.bak
