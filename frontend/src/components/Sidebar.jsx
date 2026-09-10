@@ -1,140 +1,164 @@
 import { NavLink, Link } from "react-router-dom"
 
-const navItems = [
-  { name: "Dashboard", path: "/dashboard", icon: "⌂" },
-  { name: "Predictions", path: "/predictions", icon: "◌" },
-  { name: "Recommendations", path: "/recommendations", icon: "✦" },
-  { name: "Decision History", path: "/decision-history", icon: "◷" },
-  { name: "Performance", path: "/performance", icon: "↗" },
+const workspaceLinks = [
+  {
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: "⌂",
+  },
+  {
+    label: "Predictions",
+    path: "/predictions",
+    icon: "◉",
+  },
+  {
+    label: "Recommendations",
+    path: "/recommendations",
+    icon: "✦",
+  },
+  {
+    label: "Decision History",
+    path: "/decision-history",
+    icon: "◷",
+  },
+  {
+    label: "Performance",
+    path: "/performance",
+    icon: "▥",
+  },
 ]
 
 function Sidebar() {
   return (
-    <aside className="sticky top-0 flex h-screen w-[250px] shrink-0 flex-col border-r border-slate-200 bg-white">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[250px] flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0f172a]">
       {/* Logo */}
-      <div className="border-b border-slate-100 px-5 py-5">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-sm font-bold text-white shadow-sm">
+      <div className="px-5 py-6">
+        <Link
+          to="/"
+          className="group flex items-center gap-3"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111c2e] text-xs font-bold text-white shadow-md transition group-hover:scale-105">
             SP
           </div>
 
-          <div className="min-w-0">
-            <h1 className="truncate text-[15px] font-bold tracking-tight text-slate-950">
+          <div>
+            <p className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
               SupplyPrescript
-            </h1>
+            </p>
 
-            <p className="mt-0.5 text-[11px] font-medium text-slate-400">
+            <p className="text-[9px] font-medium text-slate-400">
               AI Supply Chain
             </p>
           </div>
         </Link>
       </div>
 
-      {/* New Shipment */}
-      <div className="px-4 pt-5">
-        <Link
-          to="/predictions"
-          className="flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-        >
-          <span className="text-base leading-none">+</span>
-          <span>New Shipment</span>
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-6">
-        <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+      {/* Workspace */}
+      <div className="px-4">
+        <p className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">
           Workspace
         </p>
 
-        <div className="space-y-1">
-          {navItems.map((item) => (
+        <nav className="space-y-1">
+          {workspaceLinks.map((item) => (
             <NavLink
-              key={item.name}
+              key={item.path}
               to={item.path}
-              end
               className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-slate-950 text-white shadow-sm"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-white"
                 }`
               }
             >
               {({ isActive }) => (
                 <>
                   <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm ${
+                    className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm transition ${
                       isActive
-                        ? "bg-white/10 text-white"
-                        : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-slate-900"
+                        ? "bg-white/15 text-white"
+                        : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-blue-600 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700 dark:group-hover:text-blue-400"
                     }`}
                   >
                     {item.icon}
                   </span>
 
-                  <span>{item.name}</span>
+                  <span>{item.label}</span>
+
+                  {isActive && (
+                    <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white" />
+                  )}
                 </>
               )}
             </NavLink>
           ))}
-        </div>
+        </nav>
+      </div>
 
-        {/* System */}
-        <div className="mt-8">
-          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-            System
-          </p>
+      {/* System */}
+      <div className="mt-7 px-4">
+        <p className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">
+          System
+        </p>
 
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
-                isActive
-                  ? "bg-slate-950 text-white shadow-sm"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span
-                  className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm ${
-                    isActive
-                      ? "bg-white/10 text-white"
-                      : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-slate-900"
-                  }`}
-                >
-                  ⚙
-                </span>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
+              isActive
+                ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-white"
+            }`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm ${
+                  isActive
+                    ? "bg-white/15 text-white"
+                    : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-blue-600 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700 dark:group-hover:text-blue-400"
+                }`}
+              >
+                ⚙
+              </span>
 
-                <span>Settings</span>
-              </>
-            )}
-          </NavLink>
-        </div>
-      </nav>
+              <span>Settings</span>
 
-      {/* User */}
-      <div className="border-t border-slate-100 p-4">
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-xs font-bold text-white">
+              {isActive && (
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white" />
+              )}
+            </>
+          )}
+        </NavLink>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Profile */}
+      <div className="border-t border-slate-200 p-4 dark:border-slate-800">
+        <div className="flex items-center gap-3 rounded-xl p-2">
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
             SM
 
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-slate-50 bg-emerald-500" />
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-[#0f172a]" />
           </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold text-slate-900">
+          <div className="min-w-0">
+            <p className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
               Supply Manager
             </p>
 
-            <p className="mt-0.5 text-[11px] text-slate-400">
+            <p className="text-[9px] text-slate-400">
               Administrator
             </p>
           </div>
 
-          <span className="text-slate-400">⋮</span>
+          <span className="ml-auto text-xs text-slate-400">
+            ›
+          </span>
         </div>
       </div>
     </aside>

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import Sidebar from "./components/Sidebar"
 import StatCard from "./components/StatCard"
@@ -9,266 +8,235 @@ import ShipmentTable from "./components/ShipmentTable"
 
 import Home from "./pages/Home"
 import Prediction from "./pages/Prediction"
-import Recommendations from "./pages/Recommendations"
 import DecisionHistory from "./pages/DecisionHistory"
+import Recommendations from "./pages/Recommendations"
 import Performance from "./pages/Performance"
 import Settings from "./pages/Settings"
 
-function Dashboard() {
-  const [decisions, setDecisions] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/decisions")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch decisions")
-        }
-
-        return response.json()
-      })
-      .then((data) => {
-        setDecisions(data)
-      })
-      .catch((error) => {
-        console.error("Dashboard error:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  const totalDecisions = decisions.length
-
-  const highRisk = decisions.filter(
-    (decision) => Number(decision.delay_probability) > 0.5
-  ).length
-
-  const averageRisk =
-    totalDecisions > 0
-      ? decisions.reduce(
-          (sum, decision) => sum + Number(decision.delay_probability),
-          0
-        ) / totalDecisions
-      : 0
-
-  const outcomesRecorded = decisions.filter(
-    (decision) => Number(decision.outcome_recorded) === 1
-  ).length
-
+function DashboardLayout({ children }) {
   return (
-    <div className="space-y-6">
-      {/* Dashboard Header */}
-      <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-medium text-slate-400">
-            <span>Workspace</span>
-            <span>/</span>
-            <span className="text-slate-600">Dashboard</span>
-          </div>
+    <div className="min-h-screen bg-[#f6f8fb] dark:bg-[#0b1120]">
+      <Sidebar />
 
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Supply Chain Overview
-          </h1>
-
-          <p className="mt-1.5 text-sm text-slate-500">
-            Monitor shipment risks and optimize supply chain decisions.
-          </p>
-        </div>
-
-        <div className="flex w-fit items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          </div>
-
-          <div>
-            <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
-              System Status
-            </p>
-
-            <p className="mt-0.5 text-xs font-bold text-slate-700">
-              Operational
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Total Decisions"
-          value={loading ? "..." : totalDecisions}
-          subtitle="Saved decisions"
-        />
-
-        <StatCard
-          title="High Risk"
-          value={loading ? "..." : highRisk}
-          subtitle="Above 50% delay risk"
-        />
-
-        <StatCard
-          title="Average Risk"
-          value={loading ? "..." : `${(averageRisk * 100).toFixed(1)}%`}
-          subtitle="Across saved decisions"
-        />
-
-        <StatCard
-          title="Outcomes Recorded"
-          value={loading ? "..." : outcomesRecorded}
-          subtitle="Completed evaluations"
-        />
-      </div>
-
-      {/* Analytics */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <RiskChart />
-        </div>
-
-        <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <RiskDistribution />
-        </div>
-      </div>
-
-      {/* Recent Decisions */}
-      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <ShipmentTable />
-      </div>
+      <main className="min-h-screen pl-0 md:pl-[250px]">
+        {children}
+      </main>
     </div>
   )
 }
 
-function PageFrame() {
-  const location = useLocation()
-
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("supplyprescript-theme") === "dark"
-  })
-
-  const isHome = location.pathname === "/"
-
-  useEffect(() => {
-    const root = document.documentElement
-
-    if (darkMode) {
-      root.classList.add("dark")
-      localStorage.setItem("supplyprescript-theme", "dark")
-    } else {
-      root.classList.remove("dark")
-      localStorage.setItem("supplyprescript-theme", "light")
-    }
-  }, [darkMode])
-
+function Dashboard() {
   return (
-    <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
-      {isHome ? (
-        <Home />
-      ) : (
-        <div className="flex min-h-screen">
-          <Sidebar />
+    <DashboardLayout>
+      <div className="min-h-screen p-5 sm:p-6 lg:p-8">
+        {/* Header */}
+        <div className="mb-7 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
+              Overview
+            </p>
 
-          <main className="min-w-0 flex-1">
-            {/* Top Bar */}
-            <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f6f8fb]/95 backdrop-blur">
-              <div className="flex h-16 items-center justify-between px-5 sm:px-6 lg:px-8">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                    SupplyPrescript AI
-                  </p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Supply Chain Dashboard
+            </h1>
 
-                  <p className="mt-0.5 text-[10px] font-medium text-slate-500">
-                    Intelligent supply chain management
-                  </p>
-                </div>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              Monitor shipments, predict delays and optimize decisions.
+            </p>
+          </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Theme Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setDarkMode((previous) => !previous)}
-                    aria-label={
-                      darkMode
-                        ? "Switch to light mode"
-                        : "Switch to dark mode"
-                    }
-                    title={
-                      darkMode
-                        ? "Switch to light mode"
-                        : "Switch to dark mode"
-                    }
-                    className="group flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-[9px] font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-                  >
-                    <span className="text-sm">
-                      {darkMode ? "☀" : "☾"}
-                    </span>
-
-                    <span className="hidden sm:inline">
-                      {darkMode ? "Light" : "Dark"}
-                    </span>
-                  </button>
-
-                  {/* API Status */}
-                  <div className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 sm:flex">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-
-                    <span className="text-[9px] font-semibold text-slate-500">
-                      API Connected
-                    </span>
-                  </div>
-
-                  {/* User */}
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm">
-                    SM
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            {/* Page Content */}
-            <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
-              <div className="mb-1 h-0.5 w-10 rounded-full bg-blue-600" />
-
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-
-                <Route
-                  path="/predictions"
-                  element={<Prediction />}
-                />
-
-                <Route
-                  path="/recommendations"
-                  element={<Recommendations />}
-                />
-
-                <Route
-                  path="/decision-history"
-                  element={<DecisionHistory />}
-                />
-
-                <Route
-                  path="/performance"
-                  element={<Performance />}
-                />
-
-                <Route
-                  path="/settings"
-                  element={<Settings />}
-                />
-              </Routes>
-            </div>
-          </main>
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = "/predictions"
+            }}
+            className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#111c2e] px-5 py-3 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-blue-600 dark:shadow-blue-600/20 dark:hover:bg-blue-700"
+          >
+            <span className="text-base leading-none">+</span>
+            New Prediction
+          </button>
         </div>
-      )}
-    </div>
+
+        {/* KPI Cards */}
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            title="Total Decisions"
+            value="11"
+            subtitle="Saved decisions"
+            trend="+22.2%"
+            trendLabel="all time"
+            icon="▣"
+            iconClass="bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+          />
+
+          <StatCard
+            title="High Risk"
+            value="2"
+            subtitle="Above 50% delay risk"
+            trend="2"
+            trendLabel="high-risk decisions"
+            icon="!"
+            iconClass="bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-400"
+          />
+
+          <StatCard
+            title="Average Risk"
+            value="37.3%"
+            subtitle="Across saved decisions"
+            trend="↓ 15.2%"
+            trendLabel="vs previous"
+            icon="◉"
+            iconClass="bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400"
+          />
+
+          <StatCard
+            title="Outcomes Recorded"
+            value="2"
+            subtitle="Completed evaluations"
+            trend="100%"
+            trendLabel="recorded"
+            icon="✓"
+            iconClass="bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400"
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="mt-6 grid gap-5 xl:grid-cols-[1.65fr_1fr]">
+          <section className="min-h-[390px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-[#111827] sm:p-6">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Delay Risk Overview
+                </h2>
+
+                <p className="mt-1 text-[10px] text-slate-400">
+                  Average predicted delay risk
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-slate-200 px-3 py-2 text-[10px] font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                Last 12 periods
+              </div>
+            </div>
+
+            <RiskChart />
+          </section>
+
+          <section className="min-h-[390px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-[#111827] sm:p-6">
+            <div className="mb-5">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Risk Distribution
+              </h2>
+
+              <p className="mt-1 text-[10px] text-slate-400">
+                Distribution of saved shipment decisions
+              </p>
+            </div>
+
+            <RiskDistribution />
+          </section>
+        </div>
+
+        {/* Recent Decisions */}
+        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-[#111827] sm:p-6">
+          <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Recent Decisions
+              </h2>
+
+              <p className="mt-1 text-[10px] text-slate-400">
+                Latest shipment risk assessments and recommendations
+              </p>
+            </div>
+
+            <a
+              href="/decision-history"
+              className="text-[10px] font-bold text-blue-600 transition hover:text-blue-700 dark:text-blue-400"
+            >
+              View all →
+            </a>
+          </div>
+
+          <ShipmentTable />
+        </section>
+      </div>
+    </DashboardLayout>
   )
 }
 
 function App() {
   return (
     <BrowserRouter>
-      <PageFrame />
+      <Routes>
+        {/* Landing Page */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
+
+        {/* Dashboard */}
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        {/* Predictions */}
+        <Route
+          path="/predictions"
+          element={
+            <DashboardLayout>
+              <Prediction />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Recommendations */}
+        <Route
+          path="/recommendations"
+          element={
+            <DashboardLayout>
+              <Recommendations />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Decision History */}
+        <Route
+          path="/decision-history"
+          element={
+            <DashboardLayout>
+              <DecisionHistory />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Performance */}
+        <Route
+          path="/performance"
+          element={
+            <DashboardLayout>
+              <Performance />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Settings */}
+        <Route
+          path="/settings"
+          element={
+            <DashboardLayout>
+              <Settings />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Fallback */}
+        <Route
+          path="*"
+          element={<Home />}
+        />
+      </Routes>
     </BrowserRouter>
   )
 }
