@@ -33,13 +33,19 @@ app.add_middleware(
 
 
 # ============================================================
-# PATHS & MODEL LOADING
+# PROJECT PATHS
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
 
-MODEL_PATH = BASE_DIR / "ml" / "xgboost_delay_model.pkl"
-PREPROCESSOR_PATH = BASE_DIR / "ml" / "preprocessor.pkl"
+MODEL_PATH = PROJECT_ROOT / "ml" / "xgboost_delay_model.pkl"
+PREPROCESSOR_PATH = PROJECT_ROOT / "ml" / "preprocessor.pkl"
+
+
+# ============================================================
+# MODEL LOADING
+# ============================================================
 
 model = joblib.load(MODEL_PATH)
 preprocessor = joblib.load(PREPROCESSOR_PATH)
@@ -49,7 +55,8 @@ preprocessor = joblib.load(PREPROCESSOR_PATH)
 # DATABASE CONFIGURATION
 # ============================================================
 
-DATABASE_URL = f"sqlite:///{BASE_DIR / 'supplyprescript.db'}"
+DATABASE_PATH = PROJECT_ROOT / "supplyprescript.db"
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 engine = create_engine(
     DATABASE_URL,
@@ -64,6 +71,10 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
+
+# ============================================================
+# DATABASE MODEL
+# ============================================================
 
 class Decision(Base):
     __tablename__ = "decisions"
@@ -149,12 +160,17 @@ def get_risk_level(delay_probability: float) -> str:
 
 
 def predict_delay_probability(shipment_data: dict) -> float:
-    """Generate delay probability using the trained ML pipeline."""
+    """Generate delay probability using the trained ML model."""
 
     shipment_df = pd.DataFrame([shipment_data])
-    shipment_processed = preprocessor.transform(shipment_df)
 
-    probability = model.predict_proba(shipment_processed)[0, 1]
+    shipment_processed = preprocessor.transform(
+        shipment_df
+    )
+
+    probability = model.predict_proba(
+        shipment_processed
+    )[0, 1]
 
     return float(probability)
 
@@ -198,18 +214,25 @@ def generate_recommendations(
 
     # Calculate remaining risk after applying each action
     actions["remaining_risk"] = (
-        delay_probability * (1 - actions["risk_reduction"])
+        delay_probability
+        * (1 - actions["risk_reduction"])
     )
 
-    # Check feasibility
-    actions["budget_feasible"] = actions["cost"] <= budget
+    # Check budget feasibility
+    actions["budget_feasible"] = (
+        actions["cost"] <= budget
+    )
 
+    # Check delay feasibility
     actions["delay_feasible"] = (
-        actions["delay_days"] <= max_acceptable_delay
+        actions["delay_days"]
+        <= max_acceptable_delay
     )
 
+    # Check capacity feasibility
     actions["capacity_feasible"] = (
-        actions["capacity"] >= shipment["order_quantity"]
+        actions["capacity"]
+        >= shipment["order_quantity"]
     )
 
     feasible_actions = actions[
@@ -226,8 +249,10 @@ def generate_recommendations(
     risk_weight = 0.6
 
     feasible_actions["score"] = (
-        cost_weight * (feasible_actions["cost"] / budget)
-        + risk_weight * feasible_actions["remaining_risk"]
+        cost_weight
+        * (feasible_actions["cost"] / budget)
+        + risk_weight
+        * feasible_actions["remaining_risk"]
     )
 
     recommendations = (
@@ -240,16 +265,25 @@ def generate_recommendations(
     result = []
 
     for _, row in recommendations.iterrows():
+
         result.append(
             {
                 "action": row["action"],
-                "cost": round(float(row["cost"]), 2),
-                "expected_delay_days": int(row["delay_days"]),
+                "cost": round(
+                    float(row["cost"]),
+                    2,
+                ),
+                "expected_delay_days": int(
+                    row["delay_days"]
+                ),
                 "remaining_delay_risk": round(
                     float(row["remaining_risk"]) * 100,
                     2,
                 ),
-                "score": round(float(row["score"]), 4),
+                "score": round(
+                    float(row["score"]),
+                    4,
+                ),
             }
         )
 
@@ -362,6 +396,7 @@ def optimize_shipment(
     shipment_dict = request.model_dump()
 
     budget = shipment_dict.pop("budget")
+
     max_acceptable_delay = shipment_dict.pop(
         "max_acceptable_delay"
     )
@@ -402,6 +437,7 @@ def save_decision(
     db = SessionLocal()
 
     try:
+
         new_decision = Decision(
             supplier=decision.supplier,
             product=decision.product,
@@ -439,6 +475,7 @@ def get_decisions():
     db = SessionLocal()
 
     try:
+
         decisions = (
             db.query(Decision)
             .order_by(Decision.id.desc())
@@ -450,14 +487,26 @@ def get_decisions():
                 "id": decision.id,
                 "supplier": decision.supplier,
                 "product": decision.product,
-                "delay_probability": decision.delay_probability,
-                "selected_action": decision.selected_action,
+                "delay_probability": (
+                    decision.delay_probability
+                ),
+                "selected_action": (
+                    decision.selected_action
+                ),
                 "action_cost": decision.action_cost,
-                "expected_delay_days": decision.expected_delay_days,
-                "remaining_delay_risk": decision.remaining_delay_risk,
-                "actual_delay_days": decision.actual_delay_days,
+                "expected_delay_days": (
+                    decision.expected_delay_days
+                ),
+                "remaining_delay_risk": (
+                    decision.remaining_delay_risk
+                ),
+                "actual_delay_days": (
+                    decision.actual_delay_days
+                ),
                 "actual_cost": decision.actual_cost,
-                "outcome_recorded": decision.outcome_recorded,
+                "outcome_recorded": (
+                    decision.outcome_recorded
+                ),
             }
             for decision in decisions
         ]
@@ -479,6 +528,7 @@ def record_outcome(
     db = SessionLocal()
 
     try:
+
         decision = (
             db.query(Decision)
             .filter(Decision.id == decision_id)
@@ -507,7 +557,9 @@ def record_outcome(
         return {
             "message": "Outcome recorded successfully",
             "decision_id": decision.id,
-            "actual_delay_days": decision.actual_delay_days,
+            "actual_delay_days": (
+                decision.actual_delay_days
+            ),
             "actual_cost": decision.actual_cost,
         }
 
@@ -534,6 +586,7 @@ def get_performance(
     db = SessionLocal()
 
     try:
+
         decision = (
             db.query(Decision)
             .filter(Decision.id == decision_id)
@@ -572,13 +625,19 @@ def get_performance(
 
         return {
             "decision_id": decision.id,
-            "selected_action": decision.selected_action,
+            "selected_action": (
+                decision.selected_action
+            ),
             "predicted_delay_risk": round(
                 decision.delay_probability * 100,
                 2,
             ),
-            "expected_delay_days": decision.expected_delay_days,
-            "actual_delay_days": decision.actual_delay_days,
+            "expected_delay_days": (
+                decision.expected_delay_days
+            ),
+            "actual_delay_days": (
+                decision.actual_delay_days
+            ),
             "expected_action_cost": round(
                 decision.action_cost,
                 2,
@@ -591,7 +650,9 @@ def get_performance(
                 cost_difference,
                 2,
             ),
-            "delay_difference_days": delay_difference,
+            "delay_difference_days": (
+                delay_difference
+            ),
             "outcome_status": outcome_status,
         }
 
