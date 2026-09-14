@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const initialForm = {
   supplier: "",
   product: "",
@@ -191,7 +193,7 @@ function Prediction() {
         demand_forecast: Number(form.demand_forecast),
       }
 
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+      const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,9 +251,7 @@ function Prediction() {
     ),
   }
 
-  const riskStyle = result
-    ? getRiskStyle(result.risk_level)
-    : null
+  const riskStyle = result ? getRiskStyle(result.risk_level) : null
 
   return (
     <div className="space-y-6">
@@ -311,7 +311,11 @@ function Prediction() {
               ([section, sectionFields], sectionIndex) => (
                 <div
                   key={section}
-                  className={sectionIndex > 0 ? "mt-7 border-t border-slate-100 pt-7" : ""}
+                  className={
+                    sectionIndex > 0
+                      ? "mt-7 border-t border-slate-100 pt-7"
+                      : ""
+                  }
                 >
                   <div className="mb-4">
                     <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
@@ -472,7 +476,9 @@ function Prediction() {
                       Risk Level
                     </p>
 
-                    <p className={`mt-0.5 text-sm font-bold ${riskStyle.text}`}>
+                    <p
+                      className={`mt-0.5 text-sm font-bold ${riskStyle.text}`}
+                    >
                       {result.risk_level}
                     </p>
                   </div>
