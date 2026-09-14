@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const initialForm = {
   supplier: "",
   product: "",
@@ -135,7 +137,7 @@ function Recommendations() {
         max_acceptable_delay: Number(form.max_acceptable_delay),
       }
 
-      const response = await fetch("http://127.0.0.1:8000/recommend", {
+      const response = await fetch(`${API_URL}/recommend`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +176,7 @@ function Recommendations() {
           Number(recommendation.remaining_delay_risk) / 100,
       }
 
-      const response = await fetch("http://127.0.0.1:8000/decision", {
+      const response = await fetch(`${API_URL}/decision`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

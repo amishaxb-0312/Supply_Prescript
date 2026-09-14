@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function DecisionHistory() {
   const [decisions, setDecisions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -10,7 +12,7 @@ function DecisionHistory() {
     setError("")
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/decisions")
+      const response = await fetch(`${API_URL}/decisions`)
 
       if (!response.ok) {
         throw new Error("Failed to load decision history")
@@ -61,7 +63,6 @@ function DecisionHistory() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
@@ -90,7 +91,6 @@ function DecisionHistory() {
         </button>
       </div>
 
-      {/* Summary */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -135,7 +135,6 @@ function DecisionHistory() {
         </div>
       </div>
 
-      {/* Table Card */}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-col justify-between gap-3 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:px-6">
           <div>
