@@ -9,6 +9,10 @@ SupplyPrescript combines Machine Learning, Optimization, FastAPI, React, and SQL
 
 🔗 [Try SupplyPrescript AI](https://supply-prescript-h1l7.onrender.com)
 
+## 🔗 API
+
+Backend API: https://supply-prescript-4sbz.onrender.com
+
 ## 🚀 Overview
 
 Supply chain delays can lead to increased transportation costs, inventory shortages, customer dissatisfaction, and operational losses.
