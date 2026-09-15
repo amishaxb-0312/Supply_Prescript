@@ -5,6 +5,9 @@ An AI-powered supply chain decision intelligence system that predicts shipment d
 SupplyPrescript combines Machine Learning, Optimization, FastAPI, React, and SQL to help supply chain managers make data-driven decisions before shipment delays become costly problems.
 
 ---
+## 🚀 Live Demo
+
+🔗 [Try SupplyPrescript AI](https://supply-prescript-h1l7.onrender.com)
 
 ## 🚀 Overview
 
