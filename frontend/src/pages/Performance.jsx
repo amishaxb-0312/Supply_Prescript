@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function Performance() {
   const [decisions, setDecisions] = useState([])
   const [selectedId, setSelectedId] = useState("")
@@ -11,7 +13,7 @@ function Performance() {
   const [error, setError] = useState("")
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/decisions")
+    fetch(`${API_URL}/decisions`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to load decisions")
@@ -52,7 +54,7 @@ function Performance() {
 
     try {
       const outcomeResponse = await fetch(
-        `http://127.0.0.1:8000/decision/${selectedId}/outcome`,
+        `${API_URL}/decision/${selectedId}/outcome`,
         {
           method: "POST",
           headers: {
@@ -74,7 +76,7 @@ function Performance() {
       }
 
       const performanceResponse = await fetch(
-        `http://127.0.0.1:8000/decision/${selectedId}/performance`
+        `${API_URL}/decision/${selectedId}/performance`
       )
 
       const performanceData = await performanceResponse.json()

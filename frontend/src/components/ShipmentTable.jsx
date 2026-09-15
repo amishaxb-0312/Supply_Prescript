@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function ShipmentTable() {
   const [decisions, setDecisions] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/decisions")
+    fetch(`${API_URL}/decisions`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to load shipments")
