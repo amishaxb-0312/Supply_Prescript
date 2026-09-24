@@ -84,15 +84,22 @@ function DecisionHistory() {
           type="button"
           onClick={loadDecisions}
           disabled={loading}
+          aria-label="Refresh decision history"
+          title="Refresh decision history"
           className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-60"
         >
-          <span className="text-sm">↻</span>
+          <span className="text-sm" aria-hidden="true">
+            ↻
+          </span>
           Refresh
         </button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div
+          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          aria-label={`Total Decisions: ${loading ? "Loading" : decisions.length}`}
+        >
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Total Decisions
           </p>
@@ -106,7 +113,10 @@ function DecisionHistory() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div
+          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          aria-label={`Evaluated: ${loading ? "Loading" : recordedCount}`}
+        >
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Evaluated
           </p>
@@ -120,7 +130,12 @@ function DecisionHistory() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div
+          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          aria-label={`Pending: ${
+            loading ? "Loading" : decisions.length - recordedCount
+          }`}
+        >
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Pending
           </p>
@@ -147,28 +162,44 @@ function DecisionHistory() {
             </p>
           </div>
 
-          <span className="w-fit rounded-md bg-blue-50 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider text-blue-600">
+          <span
+            className="w-fit rounded-md bg-blue-50 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider text-blue-600"
+            aria-label="Live data"
+          >
             Live Data
           </span>
         </div>
 
         {loading ? (
-          <div className="px-6 py-16 text-center">
-            <div className="mx-auto h-8 w-8 animate-pulse rounded-lg bg-slate-100" />
+          <div
+            className="px-6 py-16 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            <div
+              className="mx-auto h-8 w-8 animate-pulse rounded-lg bg-slate-100"
+              aria-hidden="true"
+            />
 
             <p className="mt-3 text-xs text-slate-400">
               Loading decision history...
             </p>
           </div>
         ) : error ? (
-          <div className="m-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+          <div
+            className="m-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3"
+            role="alert"
+          >
             <p className="text-xs font-medium text-red-600">
               {error}
             </p>
           </div>
         ) : decisions.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-xl text-slate-400">
+            <div
+              className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-xl text-slate-400"
+              aria-hidden="true"
+            >
               ◷
             </div>
 
@@ -198,6 +229,7 @@ function DecisionHistory() {
                   ].map((heading) => (
                     <th
                       key={heading}
+                      scope="col"
                       className="px-4 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-slate-400 first:pl-5"
                     >
                       {heading}
@@ -217,7 +249,10 @@ function DecisionHistory() {
                     >
                       <td className="px-4 py-4 pl-5">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-[9px] font-bold text-blue-600">
+                          <div
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-[9px] font-bold text-blue-600"
+                            aria-hidden="true"
+                          >
                             {String(decision.id).padStart(2, "0")}
                           </div>
 
@@ -248,9 +283,11 @@ function DecisionHistory() {
                       <td className="px-4 py-4">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold ${risk.className}`}
+                          aria-label={`Risk level: ${risk.label}`}
                         >
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${risk.dot}`}
+                            aria-hidden="true"
                           />
 
                           {risk.label}
@@ -286,13 +323,25 @@ function DecisionHistory() {
 
                       <td className="px-4 py-4">
                         {Number(decision.outcome_recorded) === 1 ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-600">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-600"
+                            aria-label="Outcome recorded"
+                          >
+                            <span
+                              className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                              aria-hidden="true"
+                            />
                             Recorded
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold text-slate-500">
-                            <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold text-slate-500"
+                            aria-label="Outcome pending"
+                          >
+                            <span
+                              className="h-1.5 w-1.5 rounded-full bg-slate-400"
+                              aria-hidden="true"
+                            />
                             Pending
                           </span>
                         )}
