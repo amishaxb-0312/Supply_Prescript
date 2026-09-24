@@ -149,7 +149,7 @@ function Performance() {
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
             <span>Workspace</span>
-            <span>/</span>
+            <span aria-hidden="true">/</span>
             <span className="text-slate-600">Performance</span>
           </div>
 
@@ -162,8 +162,14 @@ function Performance() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+        <div
+          className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2"
+          aria-label="Outcome Evaluation status"
+        >
+          <span
+            className="h-2 w-2 rounded-full bg-emerald-500"
+            aria-hidden="true"
+          />
 
           <span className="text-[10px] font-bold text-emerald-600">
             Outcome Evaluation
@@ -172,8 +178,15 @@ function Performance() {
       </div>
 
       {loading ? (
-        <div className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-          <div className="mx-auto h-8 w-8 animate-pulse rounded-lg bg-slate-100" />
+        <div
+          className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            className="mx-auto h-8 w-8 animate-pulse rounded-lg bg-slate-100"
+            aria-hidden="true"
+          />
 
           <p className="mt-3 text-xs text-slate-400">
             Loading saved decisions...
@@ -181,7 +194,10 @@ function Performance() {
         </div>
       ) : decisions.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-xl text-slate-400">
+          <div
+            className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-xl text-slate-400"
+            aria-hidden="true"
+          >
             ↗
           </div>
 
@@ -202,7 +218,10 @@ function Performance() {
           >
             <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-sm font-bold text-emerald-600">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-sm font-bold text-emerald-600"
+                  aria-hidden="true"
+                >
                   01
                 </div>
 
@@ -221,18 +240,23 @@ function Performance() {
             <div className="space-y-5 p-5 sm:p-6">
               {/* Decision Select */}
               <div>
-                <label className="mb-2 block text-[11px] font-semibold text-slate-700">
+                <label
+                  htmlFor="decision-select"
+                  className="mb-2 block text-[11px] font-semibold text-slate-700"
+                >
                   Select Decision
                 </label>
 
                 <div className="relative">
                   <select
+                    id="decision-select"
                     value={selectedId}
                     onChange={(event) => {
                       setSelectedId(event.target.value)
                       setPerformance(null)
                       setError("")
                     }}
+                    aria-label="Select decision to evaluate"
                     className="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 pr-10 text-sm font-medium text-slate-800 outline-none transition hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
                   >
                     {decisions.map((decision) => (
@@ -243,7 +267,10 @@ function Performance() {
                     ))}
                   </select>
 
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                  <span
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400"
+                    aria-hidden="true"
+                  >
                     ▾
                   </span>
                 </div>
@@ -251,7 +278,10 @@ function Performance() {
 
               {/* Selected Decision */}
               {selectedDecision && (
-                <div className="rounded-lg border border-blue-100 bg-blue-50/60 p-4">
+                <div
+                  className="rounded-lg border border-blue-100 bg-blue-50/60 p-4"
+                  aria-label="Selected decision details"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[9px] font-bold uppercase tracking-wider text-blue-500">
@@ -294,22 +324,30 @@ function Performance() {
 
               {/* Actual Delay */}
               <div>
-                <label className="mb-2 block text-[11px] font-semibold text-slate-700">
+                <label
+                  htmlFor="actual-delay"
+                  className="mb-2 block text-[11px] font-semibold text-slate-700"
+                >
                   Actual Delay
                 </label>
 
                 <div className="relative">
                   <input
+                    id="actual-delay"
                     type="number"
                     min="0"
                     value={actualDelay}
                     onChange={(event) => setActualDelay(event.target.value)}
                     placeholder="e.g. 4"
                     required
+                    aria-label="Actual delay in days"
                     className="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 pr-16 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
                   />
 
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400">
+                  <span
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400"
+                    aria-hidden="true"
+                  >
                     days
                   </span>
                 </div>
@@ -317,31 +355,48 @@ function Performance() {
 
               {/* Actual Cost */}
               <div>
-                <label className="mb-2 block text-[11px] font-semibold text-slate-700">
+                <label
+                  htmlFor="actual-cost"
+                  className="mb-2 block text-[11px] font-semibold text-slate-700"
+                >
                   Actual Cost
                 </label>
 
                 <div className="relative">
                   <input
+                    id="actual-cost"
                     type="number"
                     min="0"
                     value={actualCost}
                     onChange={(event) => setActualCost(event.target.value)}
                     placeholder="e.g. 14500"
                     required
+                    aria-label="Actual cost in rupees"
                     className="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 pr-16 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
                   />
 
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400">
+                  <span
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400"
+                    aria-hidden="true"
+                  >
                     ₹
                   </span>
                 </div>
               </div>
 
               {error && (
-                <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+                <div
+                  className="rounded-lg border border-red-100 bg-red-50 px-4 py-3"
+                  role="alert"
+                  aria-live="assertive"
+                >
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-red-500">!</span>
+                    <span
+                      className="font-bold text-red-500"
+                      aria-hidden="true"
+                    >
+                      !
+                    </span>
 
                     <p className="text-xs font-medium text-red-600">
                       {error}
@@ -355,6 +410,12 @@ function Performance() {
               <button
                 type="submit"
                 disabled={submitting}
+                aria-label={
+                  submitting
+                    ? "Evaluating outcome"
+                    : "Evaluate decision performance"
+                }
+                aria-busy={submitting}
                 className="w-full rounded-lg bg-blue-600 px-5 py-3 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting
@@ -379,7 +440,10 @@ function Performance() {
                 </div>
 
                 {performance && (
-                  <span className="rounded-md bg-emerald-50 px-2.5 py-1.5 text-[9px] font-bold text-emerald-600">
+                  <span
+                    className="rounded-md bg-emerald-50 px-2.5 py-1.5 text-[9px] font-bold text-emerald-600"
+                    aria-label="Performance evaluation completed"
+                  >
                     EVALUATED
                   </span>
                 )}
@@ -389,7 +453,10 @@ function Performance() {
             {!performance ? (
               <div className="p-5 sm:p-6">
                 <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-blue-500 shadow-sm">
+                  <div
+                    className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-blue-500 shadow-sm"
+                    aria-hidden="true"
+                  >
                     ◔
                   </div>
 
@@ -438,7 +505,10 @@ function Performance() {
             ) : (
               <div className="p-5 sm:p-6">
                 {/* Status */}
-                <div className="rounded-xl bg-[#111c2e] p-5 text-white">
+                <div
+                  className="rounded-xl bg-[#111c2e] p-5 text-white"
+                  aria-label="Performance evaluation status"
+                >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
@@ -455,7 +525,10 @@ function Performance() {
                       </p>
                     </div>
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
+                    <div
+                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400"
+                      aria-hidden="true"
+                    >
                       ✓
                     </div>
                   </div>
