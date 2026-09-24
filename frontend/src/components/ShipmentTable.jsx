@@ -5,8 +5,12 @@ const API_URL = import.meta.env.VITE_API_URL
 function ShipmentTable() {
   const [decisions, setDecisions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
+    setLoading(true)
+    setError("")
+
     fetch(`${API_URL}/decisions`)
       .then((response) => {
         if (!response.ok) {
@@ -17,9 +21,11 @@ function ShipmentTable() {
       })
       .then((data) => {
         setDecisions(data)
+        setError("")
       })
       .catch((error) => {
         console.error("Shipment table error:", error)
+        setError("Unable to load shipment decisions. Please try again.")
       })
       .finally(() => {
         setLoading(false)
@@ -73,10 +79,18 @@ function ShipmentTable() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <span
+            className={`h-2 w-2 rounded-full ${
+              error ? "bg-red-500" : "bg-emerald-500"
+            }`}
+          />
 
           <span className="text-[9px] font-semibold text-slate-500">
-            {loading ? "Syncing..." : `${decisions.length} decisions`}
+            {loading
+              ? "Syncing..."
+              : error
+                ? "Connection error"
+                : `${decisions.length} decisions`}
           </span>
         </div>
       </div>
@@ -88,6 +102,20 @@ function ShipmentTable() {
 
           <p className="mt-3 text-[10px] text-slate-400">
             Loading recent decisions...
+          </p>
+        </div>
+      ) : error ? (
+        <div className="px-6 py-16 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-lg font-bold text-red-500">
+            !
+          </div>
+
+          <p className="mt-4 text-xs font-bold text-slate-700">
+            Unable to load decisions
+          </p>
+
+          <p className="mt-1 text-[10px] text-slate-400">
+            {error}
           </p>
         </div>
       ) : decisions.length === 0 ? (
@@ -237,7 +265,7 @@ function ShipmentTable() {
       )}
 
       {/* Footer */}
-      {!loading && decisions.length > 0 && (
+      {!loading && !error && decisions.length > 0 && (
         <div className="flex flex-col justify-between gap-2 border-t border-slate-100 bg-slate-50/40 px-5 py-3 sm:flex-row sm:items-center">
           <span className="text-[9px] text-slate-400">
             Showing the latest {Math.min(decisions.length, 8)} decisions
