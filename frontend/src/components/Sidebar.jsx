@@ -36,6 +36,7 @@ function Sidebar() {
         <Link
           to="/"
           className="group flex items-center gap-3"
+          aria-label="Go to SupplyPrescript home"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111c2e] text-xs font-bold text-white shadow-md transition group-hover:scale-105">
             SP
@@ -59,11 +60,12 @@ function Sidebar() {
           Workspace
         </p>
 
-        <nav className="space-y-1">
+        <nav className="space-y-1" aria-label="Workspace navigation">
           {workspaceLinks.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              aria-label={item.label}
               className={({ isActive }) =>
                 `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
                   isActive
@@ -75,6 +77,7 @@ function Sidebar() {
               {({ isActive }) => (
                 <>
                   <span
+                    title={item.label}
                     className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm transition ${
                       isActive
                         ? "bg-white/15 text-white"
@@ -87,7 +90,10 @@ function Sidebar() {
                   <span>{item.label}</span>
 
                   {isActive && (
-                    <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white" />
+                    <span
+                      className="ml-auto h-1.5 w-1.5 rounded-full bg-white"
+                      aria-hidden="true"
+                    />
                   )}
                 </>
               )}
@@ -104,6 +110,7 @@ function Sidebar() {
 
         <NavLink
           to="/settings"
+          aria-label="Settings"
           className={({ isActive }) =>
             `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${
               isActive
@@ -115,6 +122,7 @@ function Sidebar() {
           {({ isActive }) => (
             <>
               <span
+                title="Settings"
                 className={`flex h-7 w-7 items-center justify-center rounded-lg text-sm ${
                   isActive
                     ? "bg-white/15 text-white"
@@ -127,7 +135,10 @@ function Sidebar() {
               <span>Settings</span>
 
               {isActive && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white" />
+                <span
+                  className="ml-auto h-1.5 w-1.5 rounded-full bg-white"
+                  aria-hidden="true"
+                />
               )}
             </>
           )}
@@ -143,7 +154,10 @@ function Sidebar() {
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
             SM
 
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-[#0f172a]" />
+            <span
+              className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-[#0f172a]"
+              title="Online"
+            />
           </div>
 
           <div className="min-w-0">
@@ -156,7 +170,10 @@ function Sidebar() {
             </p>
           </div>
 
-          <span className="ml-auto text-xs text-slate-400">
+          <span
+            className="ml-auto text-xs text-slate-400"
+            aria-hidden="true"
+          >
             ›
           </span>
         </div>
