@@ -80,7 +80,11 @@ const workflow = [
 
 function SupplyChainVisual() {
   return (
-    <div className="relative mx-auto h-[430px] w-full max-w-[680px] sm:h-[470px]">
+    <div
+      className="relative mx-auto h-[430px] w-full max-w-[680px]"
+      aria-label="Supply chain prediction and optimization overview"
+      role="img"
+    >
       {/* Background glow */}
       <div className="absolute inset-x-8 top-12 h-[320px] rounded-full bg-blue-100/60 blur-3xl dark:bg-blue-900/20" />
 
@@ -104,12 +108,18 @@ function SupplyChainVisual() {
       </div>
 
       {/* Airplane */}
-      <div className="absolute right-5 top-4 rotate-[-10deg] text-4xl drop-shadow-md sm:right-12 sm:text-5xl">
+      <div
+        className="absolute right-5 top-4 rotate-[-10deg] text-4xl drop-shadow-md sm:right-12 sm:text-5xl"
+        aria-hidden="true"
+      >
         ✈
       </div>
 
       {/* Ship */}
-      <div className="absolute bottom-[62px] left-[12px] z-10 sm:bottom-[78px] sm:left-[68px]">
+      <div
+        className="absolute bottom-[62px] left-[12px] z-10 sm:bottom-[78px] sm:left-[68px]"
+        aria-hidden="true"
+      >
         <div className="relative">
           <div className="absolute bottom-[-7px] left-[-20px] h-3 w-[150px] rounded-full bg-blue-300/40 blur-sm sm:w-[185px]" />
 
@@ -129,7 +139,10 @@ function SupplyChainVisual() {
       </div>
 
       {/* Truck */}
-      <div className="absolute bottom-[54px] left-[170px] z-10 sm:bottom-[70px] sm:left-[270px]">
+      <div
+        className="absolute bottom-[54px] left-[170px] z-10 sm:bottom-[70px] sm:left-[270px]"
+        aria-hidden="true"
+      >
         <div className="relative flex items-end">
           <div className="h-[55px] w-[88px] rounded-md rounded-br-sm bg-slate-700 shadow-lg sm:h-[62px] sm:w-[110px]">
             <div className="m-2 h-9 rounded bg-slate-100/90 sm:h-10" />
@@ -162,7 +175,10 @@ function SupplyChainVisual() {
             </p>
           </div>
 
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-full border-[7px] border-slate-100 dark:border-slate-800 sm:h-16 sm:w-16">
+          <div
+            className="relative flex h-14 w-14 items-center justify-center rounded-full border-[7px] border-slate-100 dark:border-slate-800 sm:h-16 sm:w-16"
+            aria-hidden="true"
+          >
             <div className="absolute inset-[-7px] rounded-full border-[7px] border-transparent border-t-red-400 border-r-red-400 rotate-[-30deg]" />
 
             <span className="text-[8px] font-bold text-slate-700 dark:text-slate-200">
@@ -173,7 +189,10 @@ function SupplyChainVisual() {
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span
+              className="h-2 w-2 rounded-full bg-emerald-500"
+              aria-hidden="true"
+            />
 
             <span className="text-[9px] font-medium text-slate-600 dark:text-slate-400">
               On Time
@@ -185,7 +204,10 @@ function SupplyChainVisual() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-red-400" />
+            <span
+              className="h-2 w-2 rounded-full bg-red-400"
+              aria-hidden="true"
+            />
 
             <span className="text-[9px] font-medium text-slate-600 dark:text-slate-400">
               Delayed
@@ -204,7 +226,10 @@ function SupplyChainVisual() {
           Risk Trend
         </p>
 
-        <div className="mt-4 flex h-12 items-end gap-1.5">
+        <div
+          className="mt-4 flex h-12 items-end gap-1.5"
+          aria-hidden="true"
+        >
           <span className="h-[30%] w-3 rounded-t bg-blue-200 dark:bg-blue-900" />
           <span className="h-[48%] w-3 rounded-t bg-blue-300 dark:bg-blue-800" />
           <span className="h-[38%] w-3 rounded-t bg-blue-300 dark:bg-blue-800" />
@@ -218,7 +243,10 @@ function SupplyChainVisual() {
       {/* Recommendation */}
       <div className="absolute bottom-0 right-[20px] z-30 w-[250px] rounded-2xl border border-white/80 bg-white p-4 shadow-2xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:right-[72px] sm:w-[290px]">
         <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-lg text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-lg text-blue-700 dark:bg-blue-500/15 dark:text-blue-300"
+            aria-hidden="true"
+          >
             ✦
           </div>
 
@@ -241,7 +269,10 @@ function SupplyChainVisual() {
 
       {/* Optimized Badge */}
       <div className="absolute bottom-[8px] left-0 z-30 hidden items-center gap-2 rounded-xl border border-white bg-white px-3 py-2.5 shadow-xl shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:flex sm:px-4 sm:py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+        <div
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+          aria-hidden="true"
+        >
           ✓
         </div>
 
@@ -265,8 +296,15 @@ function Home() {
       {/* Header */}
       <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1120]">
         <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between px-5 sm:px-8 lg:px-12">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111c2e] text-sm font-bold text-white shadow-md sm:h-11 sm:w-11 sm:text-base">
+          <Link
+            to="/"
+            className="flex items-center gap-3"
+            aria-label="Go to SupplyPrescript home"
+          >
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111c2e] text-sm font-bold text-white shadow-md sm:h-11 sm:w-11 sm:text-base"
+              aria-hidden="true"
+            >
               SP
             </div>
 
@@ -281,14 +319,21 @@ function Home() {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-8 sm:flex">
+          <nav
+            className="hidden items-center gap-8 sm:flex"
+            aria-label="Main navigation"
+          >
             <a
               href="#home"
+              aria-current="page"
               className="relative py-2 text-xs font-bold text-blue-700 dark:text-blue-300"
             >
               Home
 
-              <span className="absolute bottom-0 left-0 h-0.5 w-full rounded-full bg-blue-600" />
+              <span
+                className="absolute bottom-0 left-0 h-0.5 w-full rounded-full bg-blue-600"
+                aria-hidden="true"
+              />
             </a>
 
             <Link
@@ -314,7 +359,10 @@ function Home() {
           {/* Hero Content */}
           <div className="relative z-10 max-w-[610px]">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-100/80 px-4 py-2 dark:border-blue-500/25 dark:bg-blue-500/10">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400"
+                aria-hidden="true"
+              />
 
               <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
                 AI-Powered Supply Chain Intelligence
@@ -338,16 +386,23 @@ function Home() {
               <Link
                 to="/dashboard"
                 className="inline-flex items-center gap-3 rounded-xl bg-blue-600 px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
+                aria-label="Go to SupplyPrescript dashboard"
               >
-                <span className="text-base">→</span>
+                <span className="text-base" aria-hidden="true">
+                  →
+                </span>
                 Go to Dashboard
               </Link>
 
               <a
                 href="#how-it-works"
                 className="inline-flex items-center gap-2 px-3 py-3 text-xs font-bold text-blue-700 transition hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
+                aria-label="Learn how SupplyPrescript works"
               >
-                <span className="flex h-5 w-5 items-center justify-center rounded-full border border-blue-300 text-[9px] dark:border-blue-500/40">
+                <span
+                  className="flex h-5 w-5 items-center justify-center rounded-full border border-blue-300 text-[9px] dark:border-blue-500/40"
+                  aria-hidden="true"
+                >
                   i
                 </span>
 
@@ -366,7 +421,10 @@ function Home() {
                 </p>
               </div>
 
-              <div className="h-8 w-px bg-slate-300 dark:bg-slate-700" />
+              <div
+                className="h-8 w-px bg-slate-300 dark:bg-slate-700"
+                aria-hidden="true"
+              />
 
               <div>
                 <p className="text-lg font-bold text-slate-950 dark:text-white">
@@ -378,7 +436,10 @@ function Home() {
                 </p>
               </div>
 
-              <div className="h-8 w-px bg-slate-300 dark:bg-slate-700" />
+              <div
+                className="h-8 w-px bg-slate-300 dark:bg-slate-700"
+                aria-hidden="true"
+              />
 
               <div>
                 <p className="text-lg font-bold text-slate-950 dark:text-white">
@@ -400,8 +461,15 @@ function Home() {
       </section>
 
       {/* Features */}
-      <section className="bg-white px-5 py-10 dark:bg-[#0b1120] sm:px-8 lg:px-12">
+      <section
+        className="bg-white px-5 py-10 dark:bg-[#0b1120] sm:px-8 lg:px-12"
+        aria-labelledby="features-heading"
+      >
         <div className="mx-auto max-w-[1400px]">
+          <h2 id="features-heading" className="sr-only">
+            SupplyPrescript Features
+          </h2>
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {features.map((feature) => (
               <div
@@ -410,6 +478,7 @@ function Home() {
               >
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold ${feature.iconClass}`}
+                  aria-hidden="true"
                 >
                   {feature.icon}
                 </div>
@@ -430,6 +499,7 @@ function Home() {
       {/* How It Works */}
       <section
         id="how-it-works"
+        aria-labelledby="how-it-works-heading"
         className="border-t border-slate-200 bg-gradient-to-br from-blue-50/80 via-white to-sky-50/70 px-5 py-14 dark:border-slate-800 dark:from-[#101a2e] dark:via-[#0b1120] dark:to-[#0d1b2e] sm:px-8 lg:px-12"
       >
         <div className="mx-auto max-w-[1400px]">
@@ -439,7 +509,10 @@ function Home() {
                 How It Works
               </p>
 
-              <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#12203c] dark:text-white sm:text-3xl">
+              <h2
+                id="how-it-works-heading"
+                className="mt-3 text-2xl font-bold tracking-tight text-[#12203c] dark:text-white sm:text-3xl"
+              >
                 From Prediction to Better Decisions
               </h2>
 
@@ -452,14 +525,18 @@ function Home() {
               <Link
                 to="/dashboard"
                 className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+                aria-label="Open SupplyPrescript dashboard"
               >
-                <span>→</span>
+                <span aria-hidden="true">→</span>
                 Go to Dashboard
               </Link>
             </div>
 
             <div className="relative">
-              <div className="absolute left-[12%] right-[12%] top-10 hidden h-px border-t-2 border-dashed border-blue-200 dark:border-blue-900 lg:block" />
+              <div
+                className="absolute left-[12%] right-[12%] top-10 hidden h-px border-t-2 border-dashed border-blue-200 dark:border-blue-900 lg:block"
+                aria-hidden="true"
+              />
 
               <div className="relative grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
                 {workflow.map((step) => (
@@ -469,6 +546,7 @@ function Home() {
                   >
                     <div
                       className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold shadow-sm ${step.className}`}
+                      aria-hidden="true"
                     >
                       {step.icon}
                     </div>
@@ -487,13 +565,19 @@ function Home() {
           </div>
 
           <div className="mt-12 flex items-center justify-center gap-5">
-            <span className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block" />
+            <span
+              className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block"
+              aria-hidden="true"
+            />
 
             <span className="text-[9px] font-bold tracking-[0.35em] text-blue-600 dark:text-blue-400">
               PREDICT · OPTIMIZE · STRENGTHEN
             </span>
 
-            <span className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block" />
+            <span
+              className="hidden h-px w-14 bg-blue-300 dark:bg-blue-900 sm:block"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </section>
@@ -502,7 +586,10 @@ function Home() {
       <footer className="border-t border-slate-200 bg-white px-5 py-6 dark:border-slate-800 dark:bg-[#0b1120] sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#111c2e] text-[8px] font-bold text-white">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#111c2e] text-[8px] font-bold text-white"
+              aria-hidden="true"
+            >
               SP
             </div>
 
