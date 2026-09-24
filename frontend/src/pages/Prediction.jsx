@@ -117,7 +117,10 @@ const fields = [
 function InputField({ field, value, onChange }) {
   return (
     <div>
-      <label className="mb-2 flex items-center justify-between">
+      <label
+        htmlFor={`prediction-${field.name}`}
+        className="mb-2 flex items-center justify-between"
+      >
         <span className="text-[11px] font-semibold text-slate-700">
           {field.label}
         </span>
@@ -131,6 +134,7 @@ function InputField({ field, value, onChange }) {
 
       <div className="relative">
         <input
+          id={`prediction-${field.name}`}
           name={field.name}
           type={field.type}
           value={value}
@@ -140,13 +144,19 @@ function InputField({ field, value, onChange }) {
           min={field.step ? "0" : "0"}
           max={field.step ? "1" : undefined}
           required
+          aria-label={`${field.label}${
+            field.suffix ? ` in ${field.suffix}` : ""
+          }`}
           className={`h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
             field.suffix ? "pr-14" : ""
           }`}
         />
 
         {field.suffix && (
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400">
+          <span
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400"
+            aria-hidden="true"
+          >
             {field.suffix}
           </span>
         )}
@@ -260,7 +270,7 @@ function Prediction() {
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
             <span>Workspace</span>
-            <span>/</span>
+            <span aria-hidden="true">/</span>
             <span className="text-slate-600">Predictions</span>
           </div>
 
@@ -273,8 +283,14 @@ function Prediction() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
-          <span className="h-2 w-2 rounded-full bg-blue-500" />
+        <div
+          className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2"
+          aria-label="AI Prediction Engine status"
+        >
+          <span
+            className="h-2 w-2 rounded-full bg-blue-500"
+            aria-hidden="true"
+          />
 
           <span className="text-[10px] font-bold text-blue-600">
             AI Prediction Engine
@@ -287,10 +303,14 @@ function Prediction() {
         <form
           onSubmit={handleSubmit}
           className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+          aria-label="Shipment prediction form"
         >
           <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-blue-600">
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-blue-600"
+                aria-hidden="true"
+              >
                 01
               </div>
 
@@ -339,9 +359,18 @@ function Prediction() {
           </div>
 
           {error && (
-            <div className="mx-5 mb-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3 sm:mx-6">
+            <div
+              className="mx-5 mb-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3 sm:mx-6"
+              role="alert"
+              aria-live="assertive"
+            >
               <div className="flex items-center gap-2">
-                <span className="font-bold text-red-500">!</span>
+                <span
+                  className="font-bold text-red-500"
+                  aria-hidden="true"
+                >
+                  !
+                </span>
 
                 <p className="text-xs font-medium text-red-600">
                   {error}
@@ -358,6 +387,12 @@ function Prediction() {
             <button
               type="submit"
               disabled={loading}
+              aria-busy={loading}
+              aria-label={
+                loading
+                  ? "Analyzing shipment"
+                  : "Predict shipment delay risk"
+              }
               className="rounded-lg bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Analyzing Shipment..." : "Predict Delay Risk →"}
@@ -366,7 +401,10 @@ function Prediction() {
         </form>
 
         {/* Result */}
-        <div className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div
+          className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+          aria-live="polite"
+        >
           <div className="border-b border-slate-100 px-5 py-5">
             <div className="flex items-center justify-between">
               <div>
@@ -379,7 +417,10 @@ function Prediction() {
                 </p>
               </div>
 
-              <span className="rounded-md bg-slate-50 px-2 py-1 text-[9px] font-semibold text-slate-400">
+              <span
+                className="rounded-md bg-slate-50 px-2 py-1 text-[9px] font-semibold text-slate-400"
+                aria-label="Live prediction status"
+              >
                 LIVE
               </span>
             </div>
@@ -388,7 +429,10 @@ function Prediction() {
           {!result ? (
             <div className="p-5">
               <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-5 py-12 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-blue-500 shadow-sm">
+                <div
+                  className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-blue-500 shadow-sm"
+                  aria-hidden="true"
+                >
                   ◔
                 </div>
 
@@ -426,7 +470,10 @@ function Prediction() {
           ) : (
             <div className="p-5">
               {/* Main Result */}
-              <div className="rounded-xl bg-[#111c2e] p-5 text-white">
+              <div
+                className="rounded-xl bg-[#111c2e] p-5 text-white"
+                aria-label="Shipment delay probability result"
+              >
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -442,7 +489,10 @@ function Prediction() {
                     </p>
                   </div>
 
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-sm">
+                  <div
+                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-sm"
+                    aria-hidden="true"
+                  >
                     AI
                   </div>
                 </div>
@@ -456,6 +506,7 @@ function Prediction() {
                         100
                       )}%`,
                     }}
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -463,10 +514,12 @@ function Prediction() {
               {/* Risk Level */}
               <div
                 className={`mt-4 rounded-lg border p-4 ${riskStyle.wrapper}`}
+                aria-label={`Risk level: ${result.risk_level}`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold ${riskStyle.icon}`}
+                    aria-hidden="true"
                   >
                     !
                   </div>
@@ -483,7 +536,12 @@ function Prediction() {
                     </p>
                   </div>
 
-                  <span className={`text-lg font-bold ${riskStyle.text}`}>
+                  <span
+                    className={`text-lg font-bold ${riskStyle.text}`}
+                    aria-label={`${Number(result.delay_percentage).toFixed(
+                      0
+                    )} percent delay probability`}
+                  >
                     {Number(result.delay_percentage).toFixed(0)}%
                   </span>
                 </div>
