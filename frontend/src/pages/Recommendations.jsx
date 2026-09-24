@@ -64,9 +64,14 @@ const inputFields = [
 ]
 
 function InputField({ field, value, onChange }) {
+  const inputId = `recommendation-${field.name}`
+
   return (
     <div>
-      <label className="mb-2 flex items-center justify-between">
+      <label
+        htmlFor={inputId}
+        className="mb-2 flex items-center justify-between"
+      >
         <span className="text-[11px] font-semibold text-slate-700">
           {field.label}
         </span>
@@ -80,6 +85,7 @@ function InputField({ field, value, onChange }) {
 
       <div className="relative">
         <input
+          id={inputId}
           name={field.name}
           type={field.type}
           value={value}
@@ -89,13 +95,17 @@ function InputField({ field, value, onChange }) {
           min="0"
           max={field.name === "delay_probability" ? "1" : undefined}
           required
+          aria-label={field.label}
           className={`h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 ${
             field.suffix ? "pr-16" : ""
           }`}
         />
 
         {field.suffix && (
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 py-1 text-[9px] font-semibold text-slate-400"
+          >
             {field.suffix}
           </span>
         )}
@@ -201,9 +211,12 @@ function Recommendations() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
+          <div
+            className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400"
+            aria-label="Breadcrumb"
+          >
             <span>Workspace</span>
-            <span>/</span>
+            <span aria-hidden="true">/</span>
             <span className="text-slate-600">Recommendations</span>
           </div>
 
@@ -216,8 +229,16 @@ function Recommendations() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-2">
-          <span className="text-sm text-violet-500">✦</span>
+        <div
+          className="flex items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-2"
+          aria-label="Optimization Engine"
+        >
+          <span
+            aria-hidden="true"
+            className="text-sm text-violet-500"
+          >
+            ✦
+          </span>
 
           <span className="text-[10px] font-bold text-violet-600">
             Optimization Engine
@@ -229,11 +250,15 @@ function Recommendations() {
         {/* Input Form */}
         <form
           onSubmit={handleSubmit}
+          aria-label="Recommendation optimization form"
           className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
         >
           <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm font-bold text-violet-600">
+              <div
+                aria-hidden="true"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm font-bold text-violet-600"
+              >
                 01
               </div>
 
@@ -260,9 +285,18 @@ function Recommendations() {
             ))}
 
             {error && (
-              <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="rounded-lg border border-red-100 bg-red-50 px-4 py-3"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-red-500">!</span>
+                  <span
+                    aria-hidden="true"
+                    className="font-bold text-red-500"
+                  >
+                    !
+                  </span>
 
                   <p className="text-xs font-medium text-red-600">
                     {error}
@@ -276,6 +310,7 @@ function Recommendations() {
             <button
               type="submit"
               disabled={loading}
+              aria-busy={loading}
               className="w-full rounded-lg bg-blue-600 px-5 py-3 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading
@@ -286,7 +321,10 @@ function Recommendations() {
         </form>
 
         {/* Recommendations */}
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div
+          className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+          aria-label="Recommended actions"
+        >
           <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -300,7 +338,10 @@ function Recommendations() {
               </div>
 
               {recommendations.length > 0 && (
-                <span className="rounded-md bg-blue-50 px-2.5 py-1.5 text-[9px] font-bold text-blue-600">
+                <span
+                  aria-label={`${recommendations.length} recommendation options`}
+                  className="rounded-md bg-blue-50 px-2.5 py-1.5 text-[9px] font-bold text-blue-600"
+                >
                   {recommendations.length} OPTIONS
                 </span>
               )}
@@ -309,8 +350,14 @@ function Recommendations() {
 
           <div className="space-y-3 p-5 sm:p-6">
             {recommendations.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-violet-500 shadow-sm">
+              <div
+                role="status"
+                className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center"
+              >
+                <div
+                  aria-hidden="true"
+                  className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl text-violet-500 shadow-sm"
+                >
                   ✦
                 </div>
 
@@ -330,6 +377,7 @@ function Recommendations() {
                 return (
                   <div
                     key={`${recommendation.action}-${index}`}
+                    aria-label={`Recommendation ${index + 1}: ${recommendation.action}`}
                     className={`rounded-xl border p-4 transition sm:p-5 ${
                       isBest
                         ? "border-blue-200 bg-blue-50/60"
@@ -339,6 +387,7 @@ function Recommendations() {
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex min-w-0 items-start gap-3">
                         <div
+                          aria-hidden="true"
                           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                             isBest
                               ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
@@ -373,6 +422,7 @@ function Recommendations() {
                       <button
                         type="button"
                         onClick={() => saveDecision(recommendation)}
+                        aria-label={`Save decision: ${recommendation.action}`}
                         className="shrink-0 rounded-lg bg-slate-900 px-4 py-2.5 text-[10px] font-bold text-white transition hover:bg-slate-800"
                       >
                         Save Decision
@@ -429,8 +479,15 @@ function Recommendations() {
             )}
 
             {savedAction && (
-              <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3"
+              >
+                <span
+                  aria-hidden="true"
+                  className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white"
+                >
                   ✓
                 </span>
 
