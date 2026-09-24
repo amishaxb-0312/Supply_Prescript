@@ -42,16 +42,21 @@ function StatCard({ title, value, subtitle }) {
   const card = getCardStyle()
 
   return (
-    <div className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <div
+      className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      aria-label={`${title}: ${value}`}
+    >
       <div className="flex items-start justify-between">
         <div
           className={`flex h-11 w-11 items-center justify-center rounded-xl text-base font-bold ${card.iconClass}`}
+          aria-hidden="true"
         >
           {card.icon}
         </div>
 
         <span
           className={`rounded-md bg-slate-50 px-2 py-1 text-[10px] font-semibold ${card.trendClass}`}
+          title={`${title} status`}
         >
           {card.trend}
         </span>
@@ -69,7 +74,10 @@ function StatCard({ title, value, subtitle }) {
             {value}
           </p>
 
-          <span className="mb-1 text-xs text-slate-300 transition group-hover:text-slate-400">
+          <span
+            className="mb-1 text-xs text-slate-300 transition group-hover:text-slate-400"
+            aria-hidden="true"
+          >
             ↗
           </span>
         </div>
@@ -79,7 +87,10 @@ function StatCard({ title, value, subtitle }) {
         </p>
       </div>
 
-      <div className="mt-4 h-1 overflow-hidden rounded-full bg-slate-100">
+      <div
+        className="mt-4 h-1 overflow-hidden rounded-full bg-slate-100"
+        aria-hidden="true"
+      >
         <div
           className={`h-full w-1/3 rounded-full transition-all duration-500 group-hover:w-1/2 ${
             title === "High Risk"
