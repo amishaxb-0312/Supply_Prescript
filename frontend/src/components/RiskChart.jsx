@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL
 function RiskChart() {
   const [decisions, setDecisions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     fetch(`${API_URL}/decisions`)
@@ -17,9 +18,11 @@ function RiskChart() {
       })
       .then((data) => {
         setDecisions(data)
+        setError("")
       })
       .catch((error) => {
         console.error("Risk chart error:", error)
+        setError("Unable to load risk data. Please try again.")
       })
       .finally(() => {
         setLoading(false)
@@ -95,6 +98,22 @@ function RiskChart() {
 
               <p className="mt-3 text-[10px] text-slate-400">
                 Loading risk data...
+              </p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex h-[250px] items-center justify-center rounded-xl border border-dashed border-red-200 bg-red-50">
+            <div className="text-center">
+              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-lg font-bold text-red-500 shadow-sm">
+                !
+              </div>
+
+              <p className="mt-3 text-xs font-bold text-slate-700">
+                Unable to load risk data
+              </p>
+
+              <p className="mt-1 text-[10px] text-slate-400">
+                {error}
               </p>
             </div>
           </div>
