@@ -23,9 +23,12 @@ function Settings() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <div className="mb-2 flex items-center gap-2 text-[10px] font-medium text-slate-400">
+        <div
+          className="mb-2 flex items-center gap-2 text-[10px] font-medium text-slate-400"
+          aria-label="Breadcrumb"
+        >
           <span>Workspace</span>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <span className="text-slate-600">Settings</span>
         </div>
 
@@ -40,7 +43,10 @@ function Settings() {
 
       <div className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
         {/* Settings */}
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div
+          className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+          aria-label="General preferences"
+        >
           <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
             <h2 className="text-sm font-bold text-slate-900">
               General Preferences
@@ -56,7 +62,10 @@ function Settings() {
             <div className="flex flex-col justify-between gap-5 px-5 py-5 sm:flex-row sm:items-center sm:px-6">
               <div>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-sm text-blue-600">
+                  <div
+                    aria-hidden="true"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-sm text-blue-600"
+                  >
                     ◐
                   </div>
 
@@ -72,10 +81,15 @@ function Settings() {
                 </div>
               </div>
 
-              <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+              <div
+                className="flex rounded-lg border border-slate-200 bg-slate-50 p-1"
+                aria-label="Theme selection"
+              >
                 <button
                   type="button"
                   onClick={() => setDarkMode(false)}
+                  aria-label="Switch to light mode"
+                  aria-pressed={!darkMode}
                   className={`rounded-md px-4 py-2 text-[9px] font-bold transition ${
                     !darkMode
                       ? "bg-white text-slate-900 shadow-sm"
@@ -88,6 +102,8 @@ function Settings() {
                 <button
                   type="button"
                   onClick={() => setDarkMode(true)}
+                  aria-label="Switch to dark mode"
+                  aria-pressed={darkMode}
                   className={`rounded-md px-4 py-2 text-[9px] font-bold transition ${
                     darkMode
                       ? "bg-slate-900 text-white shadow-sm"
@@ -102,7 +118,10 @@ function Settings() {
             {/* Notifications */}
             <div className="flex items-center justify-between gap-5 px-5 py-5 sm:px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm text-violet-600">
+                <div
+                  aria-hidden="true"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-sm text-violet-600"
+                >
                   ◉
                 </div>
 
@@ -120,11 +139,16 @@ function Settings() {
               <button
                 type="button"
                 onClick={() => setNotifications((previous) => !previous)}
+                aria-label={`Notifications ${
+                  notifications ? "enabled" : "disabled"
+                }`}
+                aria-pressed={notifications}
                 className={`relative h-6 w-11 shrink-0 rounded-full transition ${
                   notifications ? "bg-blue-600" : "bg-slate-300"
                 }`}
               >
                 <span
+                  aria-hidden="true"
                   className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition ${
                     notifications ? "left-6" : "left-1"
                   }`}
@@ -135,7 +159,10 @@ function Settings() {
             {/* AI Engine */}
             <div className="flex items-center justify-between gap-5 px-5 py-5 sm:px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-sm text-emerald-600">
+                <div
+                  aria-hidden="true"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-sm text-emerald-600"
+                >
                   ✦
                 </div>
 
@@ -150,7 +177,11 @@ function Settings() {
                 </div>
               </div>
 
-              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-bold uppercase tracking-wider text-emerald-600">
+              <span
+                role="status"
+                aria-label="AI Prediction Engine status: Active"
+                className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-bold uppercase tracking-wider text-emerald-600"
+              >
                 Active
               </span>
             </div>
@@ -158,7 +189,10 @@ function Settings() {
             {/* API */}
             <div className="flex items-center justify-between gap-5 px-5 py-5 sm:px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-600">
+                <div
+                  aria-hidden="true"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-600"
+                >
                   ⇄
                 </div>
 
@@ -173,8 +207,15 @@ function Settings() {
                 </div>
               </div>
 
-              <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-bold uppercase tracking-wider text-emerald-600">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span
+                role="status"
+                aria-label="Backend API status: Connected"
+                className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-bold uppercase tracking-wider text-emerald-600"
+              >
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                />
                 Connected
               </span>
             </div>
@@ -182,7 +223,10 @@ function Settings() {
         </div>
 
         {/* System Information */}
-        <div className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div
+          className="h-fit overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+          aria-label="System information"
+        >
           <div className="border-b border-slate-100 px-5 py-5">
             <h2 className="text-sm font-bold text-slate-900">
               System Information
@@ -239,7 +283,10 @@ function Settings() {
                 Theme
               </p>
 
-              <p className="mt-1 text-xs font-bold text-slate-800">
+              <p
+                className="mt-1 text-xs font-bold text-slate-800"
+                aria-live="polite"
+              >
                 {darkMode ? "Dark Mode" : "Light Mode"}
               </p>
             </div>
